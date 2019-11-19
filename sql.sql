@@ -2,32 +2,29 @@ DROP TABLE IF EXISTS `base_video`;
 CREATE TABLE IF NOT EXISTS `base_video` (
 `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 `cate_id` int(11) unsigned NOT NULL COMMENT '分类id',
-`auther_id` int(11) unsigned NOT NULL COMMENT '作者id',
+`author_id` int(11) unsigned NOT NULL default 0 COMMENT '作者id',
 `title` varchar(60) NOT NULL COMMENT '标题',
 `pic` varchar(128) NOT NULL COMMENT '课程封面图',
+`desc` text not null comment '介绍',
 `roll_pic` varchar(1270) not null default '' comment '轮播图',
-`source_url` varchar(256) NOT NULL COMMENT '资源路径',
 `keywords` varchar(255) not null default '' comment '关键字',
 `see_sum` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '观看次数',
-`collect_sum` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '收藏数量',
-`comment_sum` int(11) unsigned NOT NULL DEFAULT '0' COMMENT '评论数量',
-`like_sum` int(11) unsigned not null default 0 comment '点赞数量',
-`share_sum` int(11) unsigned not null default 0 comment '分享数量',
 `section_sum` int(11) unsigned not null default 0 comment '视频数量',
+`buy_sum` int(11) unsigned not null default 0 comment '购买数量',
 `price` decimal(10,2) not null default 0 comment '售价',
-`is_feel` tinyint(1) not null default 0 comment '是否免费 0否 1是',
-`status` tinyint(1) not null comment '审核状态 0 禁止 1 未审核 2 审核通过',
 `create_time` int(11) NOT NULL COMMENT '上传时间',
 `delete_time` int(1) NOT NULL DEFAULT 0 COMMENT '0  没被删除 时间戳已经删除',
 PRIMARY KEY (`id`),
 INDEX cate_id(`cate_id`),
 INDEX create_time(`create_time`),
 INDEX delete_time(`delete_time`),
-INDEX auther_id(`auther_id`)
+INDEX author_id(`author_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 create table `base_video_section`(
 `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
+`video_id` int(11) not null comment 'videoid',
+`number` varchar(10) not null comment '章节',
 `title` varchar(60) NOT NULL COMMENT '标题',
 `source_url` varchar(256) NOT NULL COMMENT '资源路径',
 PRIMARY KEY (`id`)
@@ -125,6 +122,8 @@ create table `base_teacher`(
 `pic` varchar(128) not null comment '照片',
 `desc` varchar(128) not null comment '简介',
 `content` text not null comment '介绍',
+`create_time` int(11) not null comment '创建时间',
+`delete_time` int(11) not null default 0 comment '删除时间',
 primary key(`id`)
 )engine=innodb charset=utf8;
 
@@ -150,6 +149,8 @@ create table `base_business_order`(
 `phone` varchar(18) not null comment '电话',
 `create_time` int(11) not null comment '创建时间',
 `desc` varchar(63) not null comment '描述',
+`status` tinyint(1) not null default 1 comment '1 成功 2 取消',
+`appointment_time` int(11) not null comment '预约时间',
 primary key(`id`)
 )engine=innodb charset=utf8;
 
@@ -201,3 +202,31 @@ index `type`(`type`),
 index `user_id`(`user_id`),
 index `object_id`(`object_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+--订单表
+create table `base_order`(
+`id` int auto_incmrent,
+`order_code` char(32) not null comment '订单号',
+`user_id` int(11) not null comment '用户id',
+`pay_money` decimal(10,2) not null comment '下单金额',
+`type` tinyint(1) not null comment '1 视频 2 咨询',
+`object_id` int(11) not null comment '对象id',
+`object_json` text not null comment '对象冗余',
+`status` tinyint(1) not null comment '1 未支付  2 已支付',
+`create_time` int(11) not null comment '下单时间',
+`pay_time` int(11) not null default 0 comment '支付时间',
+primary key(`id`)
+index `type`(`type`),
+index `object_id`(`object_id`),
+index `user_id`(`user_id`)
+)engine=innodb charset=utf8;
+
+--图片表
+create table `base_image`(
+`id` int auto_incmrent,
+`type` tinyint(1) not null comment '1 banner',
+`url` varchar(128) not null comment '资源地址',
+primary key (`id`)
+)engine=innodb charset=utf8;
+
