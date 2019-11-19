@@ -48,7 +48,7 @@ INDEX `order_num`(`order_num`)
 DROP TABLE IF EXISTS `base_comment`;
 CREATE TABLE IF NOT EXISTS `base_comment` (
 `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-`type` tinyint(1) unsigned NOT NULL COMMENT '评论对象类型 1 律所 2 老师评价 ',
+`type` tinyint(1) unsigned NOT NULL COMMENT '评论对象类型 1 课程 2 老师评价 ',
 `public_id` int(11) NOT NULL COMMENT '所评论的id 例如 视频的评论,这里存的是视频id',
 `user_id` int(11) NOT NULL COMMENT '用户id',
 `nickname` varchar(60) NOT NULL COMMENT '评论用户昵称',
