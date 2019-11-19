@@ -1,0 +1,91 @@
+{include file="common/source"}
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+            <h5>
+                <button type="button" onclick="window.location.href='{:url('/admin/Bus/add')}'"
+                        class="btn btn-w-m btn-primary">添加业务
+                </button>
+            </h5>
+        </div>
+        <div class="ibox-content">
+            <div class="example">
+
+                <table class="table table-bordered table-hover text-center">
+                    <thead>
+                    <tr class="text-center">
+                        <th style="text-align: center;">标题</th>
+                        <th style="text-align: center;">创建时间</th>
+                        <th style="text-align: center;">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {foreach $list as $key => $value}
+                    <td>{$value.title}</td>
+                    <td>{$value->create_time|date="Y-m-d H:i:s"}</td>
+                        <td>
+                            <button onclick="window.location.href='{:url('admin/Bus/edit',['id'=>$value->id])}'" class="btn btn-info" type="button"><i class="fa fa-paste"></i> 编辑</button>
+                            <button onclick="removeArticle(this,'{$value->id}')" class="btn btn-danger" type="button"><i class="fa fa-remove"></i> <span class="bold">删除</span></button>
+                        </td>
+                    </tr>
+                    {/foreach}
+                    </tbody>
+                </table>
+            </div>
+            <div style="text-align: center;">
+                {$list->render()|raw}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    checkStatus = function(_this,old_status,article_id) {
+        $.ajax({
+            url: "{:url('admin/Product/changeStatus')}",
+            type: 'post',
+            dataType: 'json',
+            data:{
+                article_id : article_id,
+        },
+        success: function (data) {
+            if (data.code == 0) {
+                layer.msg(data.msg,{icon: 5})
+            } else {
+                layer.msg('修改成功')
+                let str = ``
+                if (old_status == 0){
+                    str = `<a href="javascript:void(0);" onclick="checkStatus(this,1,'${article_id}')">
+                                <p><span class="label label-info">正常</span></p>
+                            </a>`
+                } else{
+                    str = `<a href="javascript:void(0);" onclick="checkStatus(this,0,'${article_id}')">
+                                <p><span class="label label-danger">已冻结</span></p>
+                            </a>`
+                }
+                $(_this).parents('td').html(str)
+            }
+        }
+    })
+    }
+
+
+    var removeArticle = function (_this, article_id) {
+        $.ajax({
+            url: "{:url('admin/Bus/delete')}",
+            type: 'post',
+            dataType: 'json',
+            data:{
+                id : article_id,
+            },
+            success: function (data) {
+                if (data.code == 0) {
+                    layer.msg(data.msg,{icon: 5})
+                } else {
+                    layer.msg('删除成功',{icon : 1})
+                    $(_this).parents('tr').remove();
+                }
+            }
+        })
+    }
+</script>
