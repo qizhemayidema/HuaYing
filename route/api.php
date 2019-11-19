@@ -6,5 +6,6 @@
  * Time: 16:19
  */
 return [
-
+    'homeIndex' => 'api/AppletHome/homeIndex',
+    'AppleCourse'=>'api/AppleCourse/courseList',
 ];
