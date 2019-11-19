@@ -1,0 +1,70 @@
+{include file="common/source"}
+<!-- 自定义js -->
+<script src="__STATIC__/js/content.js?v=1.0.0"></script>
+
+
+
+<body class="gray-bg">
+<div class="wrapper wrapper-content animated fadeInRight">
+
+    <div class="row">
+        <div class="col-sm-12">
+            <div class="ibox-content p-xl">
+                <div class="row">
+                    <div class="col-sm-6">
+
+                    </div>
+
+                    <div class="col-sm-6 text-right">
+                        <h4>订单编号：</h4>
+                        <h4 class="text-navy">{$order.order_code}</h4>
+                        <address>
+                            <strong>{$order.nickname}</strong><br>
+                        </address>
+                        <p>
+                            <span><strong>下单日期：</strong> {$order.create_time|date="Y-m-d H:i:s"}</span>
+                            {if $order.pay_time}
+                            <br/>
+                            <span><strong>付款时间：</strong> {$order.pay_time|date="Y-m-d H:i:s"}</span>
+
+                            {/if}
+                        </p>
+                    </div>
+                </div>
+
+                <div class="table-responsive m-t">
+                    <table class="table invoice-table">
+                        <thead>
+                        <tr>
+                            <th>清单</th>
+                            <th>单价</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>
+                                <div><strong>{$order.data.title}</strong>
+                                </div>
+                            </td>
+                            <td>{$order.data.price}</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <!-- /table-responsive -->
+
+                <table class="table invoice-total">
+                    <tbody>
+                    <tr>
+                        <td><strong>总价：</strong>
+                        </td>
+                        <td>&yen;{$order.pay_money}</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>

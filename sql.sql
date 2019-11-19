@@ -21,6 +21,7 @@ INDEX delete_time(`delete_time`),
 INDEX author_id(`author_id`)
 )ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
 create table `base_video_section`(
 `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
 `video_id` int(11) not null comment 'videoid',
@@ -48,7 +49,7 @@ INDEX `order_num`(`order_num`)
 DROP TABLE IF EXISTS `base_comment`;
 CREATE TABLE IF NOT EXISTS `base_comment` (
 `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-`type` tinyint(1) unsigned NOT NULL COMMENT '评论对象类型 1 律所 2 老师评价 ',
+`type` tinyint(1) unsigned NOT NULL COMMENT '评论对象类型 1 课程评价 2 老师评价 ',
 `public_id` int(11) NOT NULL COMMENT '所评论的id 例如 视频的评论,这里存的是视频id',
 `user_id` int(11) NOT NULL COMMENT '用户id',
 `nickname` varchar(60) NOT NULL COMMENT '评论用户昵称',
@@ -206,7 +207,7 @@ index `object_id`(`object_id`)
 
 --订单表
 create table `base_order`(
-`id` int auto_incmrent,
+`id` int auto_increment,
 `order_code` char(32) not null comment '订单号',
 `user_id` int(11) not null comment '用户id',
 `pay_money` decimal(10,2) not null comment '下单金额',
@@ -216,7 +217,7 @@ create table `base_order`(
 `status` tinyint(1) not null comment '1 未支付  2 已支付',
 `create_time` int(11) not null comment '下单时间',
 `pay_time` int(11) not null default 0 comment '支付时间',
-primary key(`id`)
+primary key(`id`),
 index `type`(`type`),
 index `object_id`(`object_id`),
 index `user_id`(`user_id`)
@@ -224,9 +225,13 @@ index `user_id`(`user_id`)
 
 --图片表
 create table `base_image`(
-`id` int auto_incmrent,
+`id` int auto_increment,
 `type` tinyint(1) not null comment '1 banner',
 `url` varchar(128) not null comment '资源地址',
 primary key (`id`)
 )engine=innodb charset=utf8;
 
+
+--订单
+--评价管理
+--

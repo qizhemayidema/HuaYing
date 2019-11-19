@@ -6,11 +6,11 @@ use think\Controller;
 use think\Request;
 use think\Validate;
 
-class Seek extends Base
+class Teacher extends Base
 {
     public function index()
     {
-        $list = (new \app\common\model\Seek())->where(['delete_time'=>0])
+        $list = (new \app\common\model\Teacher())->where(['delete_time'=>0])
             ->order('id','desc')->paginate(10);
 
         $this->assign('list',$list);
@@ -28,11 +28,10 @@ class Seek extends Base
         $post = $request->post();
 
         $rules = [
-            'title|标题' => 'require|max:64',
-            'pic|封面' => 'require',
-            'desc|简介' => 'require|max:256',
-            'content|内容' => 'require',
-            'price|价格' => 'require|number',
+            'name|姓名'  => 'require|max:30',
+            'pic|照片'    => 'require',
+            'desc|简介'   => 'require|max:128',
+            'content|介绍' => 'require',
         ];
 
         $validate = new Validate($rules);
@@ -42,15 +41,14 @@ class Seek extends Base
         }
 
         $data = [
-            'title' => $post['title'],
-            'pic' => $post['pic'],
-            'desc' => $post['desc'],
-            'content' => $post['content'],
-            'price' => $post['price'],
+            'name'  => $post['name'],
+            'pic'  => $post['pic'],
+            'desc'  => $post['desc'],
+            'content'  => $post['content'],
             'create_time' => time(),
         ];
 
-        (new \app\common\model\Seek())->insert($data);
+        (new \app\common\model\Teacher())->insert($data);
 
         return json(['code'=>1,'msg'=>'success']);
     }
@@ -59,11 +57,12 @@ class Seek extends Base
     {
         $id = $request->param('id');
 
-        $data = (new \app\common\model\Seek())->find($id);
+        $data = (new \app\common\model\Teacher())->find($id);
 
         $this->assign('data',$data);
 
         return $this->fetch();
+
     }
 
     public function update(Request $request)
@@ -71,11 +70,10 @@ class Seek extends Base
         $post = $request->post();
 
         $rules = [
-            'title|标题' => 'require|max:64',
-            'pic|封面' => 'require',
-            'desc|简介' => 'require|max:256',
-            'content|内容' => 'require',
-            'price|价格' => 'require',
+            'name|姓名'  => 'require|max:30',
+            'pic|照片'    => 'require',
+            'desc|简介'   => 'require|max:128',
+            'content|介绍' => 'require',
         ];
 
         $validate = new Validate($rules);
@@ -85,14 +83,13 @@ class Seek extends Base
         }
 
         $data = [
-            'title' => $post['title'],
-            'pic' => $post['pic'],
-            'desc' => $post['desc'],
-            'content' => $post['content'],
-            'price' => $post['price'],
+            'name'  => $post['name'],
+            'pic'  => $post['pic'],
+            'desc'  => $post['desc'],
+            'content'  => $post['content'],
         ];
 
-        (new \app\common\model\Seek())->where(['id'=>$post['id']])->update($data);
+        (new \app\common\model\Teacher())->where(['id'=>$post['id']])->update($data);
 
         return json(['code'=>1,'msg'=>'success']);
     }
@@ -101,7 +98,7 @@ class Seek extends Base
     {
         $id = $request->post('id');
 
-        (new \app\common\model\Seek())->where(['id'=>$id])->update(['delete_time'=>time()]);
+        (new \app\common\model\Teacher())->where(['id'=>$id])->update(['delete_time'=>time()]);
 
         return json(['code'=>1,'msg'=>'success']);
 

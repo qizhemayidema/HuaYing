@@ -53,7 +53,7 @@ class Category extends Model
 
     private function getMoreList($categorys,$pId = 0,$l = 0)
     {
-        $list =array();
+        $list = array();
 
         foreach ($categorys as $k=>$v){
 

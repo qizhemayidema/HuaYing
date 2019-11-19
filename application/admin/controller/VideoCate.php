@@ -4,11 +4,11 @@ namespace app\admin\controller;
 
 use think\Controller;
 use think\Request;
-use think\Validate;
-use app\common\typeCode\cate\Brochure as CateType;
 use app\common\model\Category as CategoryModel;
+use app\common\typeCode\cate\Video as CateType;
+use think\Validate;
 
-class BrochureCate extends Base
+class VideoCate extends Base
 {
     public function index()
     {
@@ -119,7 +119,7 @@ class BrochureCate extends Base
     {
         $cate_id = $request->post('cate_id');
 
-        $is_exists = (new \app\common\model\Brochure())->where(['cate_id'=>$cate_id])->find();
+        $is_exists = (new \app\common\model\Video())->where(['cate_id'=>$cate_id])->find();
 
         if ($is_exists) return json(['code'=>0,'msg'=>'分类正被使用,无法删除']);
 

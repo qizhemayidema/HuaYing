@@ -1,0 +1,107 @@
+{include file="common/source"}
+<div class="col-sm-12">
+    <div class="ibox float-e-margins">
+        <div class="ibox-title">
+
+        </div>
+        <div class="ibox-content">
+            <div class="example">
+
+                <table class="table table-bordered table-hover text-center">
+                    <thead>
+                    <tr class="text-center">
+                        <th style="text-align: center;">订单号</th>
+                        <th style="text-align: center;">下单用户</th>
+                        <th style="text-align: center;">下单金额</th>
+                        <th style="text-align: center;">当前状态</th>
+                        <th style="text-align: center;">下单时间</th>
+                        <th style="text-align: center;">支付时间</th>
+                        <th style="text-align: center;">操作</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {foreach $list as $key => $value}
+                    <td>{$value.order_code}</td>
+                    <td>{$value.nickname}</td>
+                    <td>{$value.pay_money}</td>
+                    <td>
+                        {if $value.status == 1}
+                        未支付
+                        {/if}
+                        {if $value.status == 2}
+                        已支付
+                        {/if}
+                    </td>
+
+                    <td>{$value.create_time|date="Y-m-d H:i:s"}</td>
+                    <td>
+                        {if $value.pay_time}
+                        {$value.pay_time|date="Y-m-d H:i:s"}
+                        {/if}
+                    </td>
+                    <td>
+                        <button onclick="window.location.href='{:url('admin/Order/SeekInfo',['id'=>$value->id])}'" class="btn btn-info" type="button"><i class="fa fa-paste"></i> 查看详情</button>
+                        <!--<button onclick="removeArticle(this,'{$value->id}')" class="btn btn-danger" type="button"><i class="fa fa-remove"></i> <span class="bold">删除</span></button>-->
+                    </td>
+                    </tr>
+                    {/foreach}
+                    </tbody>
+                </table>
+            </div>
+            <div style="text-align: center;">
+                {$list->render()|raw}
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+
+    checkStatus = function(_this,old_status,article_id) {
+        $.ajax({
+            url: "{:url('admin/Product/changeStatus')}",
+            type: 'post',
+            dataType: 'json',
+            data:{
+                article_id : article_id,
+            },
+            success: function (data) {
+                if (data.code == 0) {
+                    layer.msg(data.msg,{icon: 5})
+                } else {
+                    layer.msg('修改成功')
+                    let str = ``
+                    if (old_status == 0){
+                        str = `<a href="javascript:void(0);" onclick="checkStatus(this,1,'${article_id}')">
+                                <p><span class="label label-info">正常</span></p>
+                            </a>`
+                    } else{
+                        str = `<a href="javascript:void(0);" onclick="checkStatus(this,0,'${article_id}')">
+                                <p><span class="label label-danger">已冻结</span></p>
+                            </a>`
+                    }
+                    $(_this).parents('td').html(str)
+                }
+            }
+        })
+    }
+
+
+    var removeArticle = function (_this, article_id) {
+        $.ajax({
+            url: "{:url('admin/Teacher/delete')}",
+            type: 'post',
+            dataType: 'json',
+            data:{
+                id : article_id,
+            },
+            success: function (data) {
+                if (data.code == 0) {
+                    layer.msg(data.msg,{icon: 5})
+                } else {
+                    layer.msg('删除成功',{icon : 1})
+                    $(_this).parents('tr').remove();
+                }
+            }
+        })
+    }
+</script>
