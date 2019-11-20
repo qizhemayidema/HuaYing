@@ -7,5 +7,9 @@
  */
 return [
     'homeIndex' => 'api/AppletHome/homeIndex',
-    'AppleCourse'=>'api/AppleCourse/courseList',
+    'appleCourse'=>'api/AppletCourse/courseList',
+    'appleCourseDetaail'=>'api/AppletCourse/courseDetail',
+    'appleWePay'=>'api/AppletPay/appletWeiPay',
+    'appleWeCheck'=>'api/AppletPay/appletWeiCheck',
+    'appleLogin'=>'api/AppletUser/Login',
 ];
