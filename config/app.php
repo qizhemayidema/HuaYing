@@ -144,5 +144,5 @@ return [
     'exception_handle'       => '',
 
     'upload_root_path'      => '/static/uploads/',
-
+    'localhost_path'        =>'https://'.$_SERVER['HTTP_HOST'].'/',
 ];
