@@ -3,7 +3,6 @@
  * Created by PhpStorm.
  * User: xcf
  * Date: 2019/11/19
- * Time: 16:25
  */
 namespace app\api\controller;
 
@@ -11,7 +10,8 @@ use think\Controller;
 use app\common\model\Business as BusinessModel;
 use app\common\typeCode\cate\Business as CateType;
 use app\common\model\Category as CategoryModel;
-
+use app\api\model\ApiBus;
+use app\api\model\ApiBusOrder;
 
 class Bus extends Controller
 {
@@ -52,5 +52,29 @@ class Bus extends Controller
         } else {
         	return json(['code' => 0, 'msg'=>'该业务不存在'], 256);
         }
+    }
+
+    /**
+     * 预约报名
+     * $data 2019/11/20
+     */
+    public function enroll()
+    {
+        # code...
+        $list = (new ApiBus())->getAllBusiness();
+        
+        return json(['code' => 1, 'data'=>$list], 256);
+    }
+
+    /**
+     * 报名提交
+     * $data 2019/11/20
+     */
+    public function submit()
+    {
+        # code...
+        $list = (new ApiBusOrder())->add();
+        
+        return json($list, 256);
     }
 }
