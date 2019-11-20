@@ -3,8 +3,8 @@
     <div class="ibox float-e-margins">
         <div class="ibox-title">
             <h5>
-                <button type="button" onclick="window.location.href='{:url('/admin/Teacher/add')}'"
-                        class="btn btn-w-m btn-primary">添加老师
+                <button type="button" onclick="window.location.href='{:url('/admin/Video/add')}'"
+                        class="btn btn-w-m btn-primary">添加视频
                 </button>
             </h5>
         </div>
@@ -14,19 +14,23 @@
                 <table class="table table-bordered table-hover text-center">
                     <thead>
                     <tr class="text-center">
-                        <th style="text-align: center;">姓名</th>
-                        <th style="text-align: center;">照片</th>
+                        <th style="text-align: center;">标题</th>
+                        <th style="text-align: center;">封面</th>
+                        <th style="text-align: center;">章节数</th>
+                        <th style="text-align: center;">购买人数</th>
                         <th style="text-align: center;">创建时间</th>
                         <th style="text-align: center;">操作</th>
                     </tr>
                     </thead>
                     <tbody>
                     {foreach $list as $key => $value}
-                    <td>{$value.name}</td>
+                    <td>{$value.title}</td>
                     <td><img width="38" src="{$value.pic}" alt=""></td>
+                    <td>{$value.section_sum}</td>
+                    <td>{$value.buy_sum}</td>
                     <td>{$value->create_time|date="Y-m-d H:i:s"}</td>
                     <td>
-                        <button onclick="window.location.href='{:url('admin/Teacher/edit',['id'=>$value->id])}'" class="btn btn-info" type="button"><i class="fa fa-paste"></i> 编辑</button>
+                        <button onclick="window.location.href='{:url('admin/Video/edit',['id'=>$value->id])}'" class="btn btn-info" type="button"><i class="fa fa-paste"></i> 编辑</button>
                         <button onclick="removeArticle(this,'{$value->id}')" class="btn btn-danger" type="button"><i class="fa fa-remove"></i> <span class="bold">删除</span></button>
                     </td>
                     </tr>
@@ -74,7 +78,7 @@
 
     var removeArticle = function (_this, article_id) {
         $.ajax({
-            url: "{:url('admin/Teacher/delete')}",
+            url: "{:url('admin/Video/delete')}",
             type: 'post',
             dataType: 'json',
             data:{
