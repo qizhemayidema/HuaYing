@@ -35,7 +35,7 @@ class ApiBusOrder extends Model
         // 验证用户是否已冻结
         if (Db::name('user')->where(['id'=>$data['user_id'], 'status'=>1])->find()) {
             # code...
-            return ['code' => 0, 'msg'=>'账号已被冻结'];
+            return ['code' => 0,'msg'=> '请求成功', 'msg'=>'账号已被冻结'];
         }
 
         // 添加数据

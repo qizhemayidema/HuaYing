@@ -34,7 +34,7 @@ class Bus extends Controller
         $where[] = ['delete_time', '=', 0];
         $list = (new BusinessModel())->where($where)->order('id','desc')->paginate(12);
 
-        return json(['code' => 1, 'data'=>['cate'=>$cate, 'BusinessModel'=>$list]], 256);
+        return json(['code' => 1,'msg'=> '请求成功', 'data'=>['cate'=>$cate, 'BusinessModel'=>$list]], 256);
     }
 
     /**
@@ -48,7 +48,7 @@ class Bus extends Controller
 
         if ($cate_id && $detail = (new BusinessModel())->find($cate_id)) {
 
-        	return json(['code' => 1, 'data'=>$detail], 256);
+        	return json(['code' => 1,'msg'=> '请求成功', 'data'=>$detail], 256);
         } else {
         	return json(['code' => 0, 'msg'=>'该业务不存在'], 256);
         }
@@ -63,7 +63,7 @@ class Bus extends Controller
         # code...
         $list = (new ApiBus())->getAllBusiness();
         
-        return json(['code' => 1, 'data'=>$list], 256);
+        return json(['code' => 1,'msg'=> '请求成功', 'data'=>$list], 256);
     }
 
     /**

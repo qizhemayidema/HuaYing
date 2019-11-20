@@ -31,7 +31,7 @@ class Brochure extends Controller
         $cate_id = input('cate_id')?input('cate_id'):$cate[0]['id'];
         $list = (new BrochureModel())->where(['cate_id'=>$cate_id])->order('id','desc')->paginate(12);
 
-        return json(['code' => 1, 'data'=>['cate'=>$cate, 'brochureModel'=>$list]], 256);
+        return json(['code' => 1,'msg'=> '请求成功', 'data'=>['cate'=>$cate, 'brochureModel'=>$list]], 256);
     }
 
     /**
@@ -45,7 +45,7 @@ class Brochure extends Controller
 
         if ($cate_id && $detail = (new BrochureModel())->find($cate_id)) {
 
-        	return json(['code' => 1, 'data'=>$detail], 256);
+        	return json(['code' => 1, 'msg'=> '请求成功', 'data'=>$detail], 256);
         } else {
         	return json(['code' => 0, 'msg'=>'分校不存在'], 256);
         }

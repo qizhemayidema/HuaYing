@@ -21,7 +21,7 @@ class Seek extends Controller
         //获取咨询列表
         $list = (new SeekModel())->where(['delete_time'=>0])->order('id','desc')->paginate(4);
 
-        return json(['code' => 1, 'data'=>$list], 256);
+        return json(['code' => 1,'msg'=> '请求成功', 'data'=>$list], 256);
     }
 
     /**
@@ -36,7 +36,7 @@ class Seek extends Controller
         if ($cate_id && $detail = (new SeekModel())->find($cate_id)) {
 
             $detail['pic'] = config('app.localhost_path').$detail['pic'];
-        	return json(['code' => 1, 'data'=>$detail], 256);
+        	return json(['code' => 1,'msg'=> '请求成功', 'data'=>$detail], 256);
         } else {
         	return json(['code' => 0, 'msg'=>'咨询不存在'], 256);
         }

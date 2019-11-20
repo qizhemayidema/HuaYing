@@ -51,7 +51,7 @@ class ApiUser extends Model
                 return ['code'=>0, 'msg'=>'账号已被冻结'];
             }
 
-            return ['code'=>1, 'data'=>$user];
+            return ['code'=>1,'msg'=>'请求成功', 'data'=>$user];
         } else {
             return ['code'=>3, 'msg'=>'用户不存在'];
         }

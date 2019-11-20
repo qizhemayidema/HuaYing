@@ -31,7 +31,7 @@ class Law extends Controller
         $cate_id = input('cate_id')?input('cate_id'):$cate[0]['id'];
         $list = (new LawModel())->where(['cate_id'=>$cate_id])->order('id','desc')->paginate(10);
 
-        return json(['code' => 1, 'data'=>['cate'=>$cate, 'law'=>$list]], 256);
+        return json(['code' => 1,'msg'=> '请求成功', 'data'=>['cate'=>$cate, 'law'=>$list]], 256);
     }
 
     /**
@@ -46,7 +46,7 @@ class Law extends Controller
         if ($cate_id && $detail = (new LawModel())->find($cate_id)) {
 
             $detail['pic'] = config('app.localhost_path').$detail['pic'];
-        	return json(['code' => 1, 'data'=>$detail], 256);
+        	return json(['code' => 1,'msg'=> '请求成功', 'data'=>$detail], 256);
         } else {
         	return json(['code' => 0, 'msg'=>'律所不存在'], 256);
         }

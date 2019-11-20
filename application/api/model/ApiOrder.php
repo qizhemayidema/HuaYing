@@ -62,7 +62,7 @@ class ApiOrder extends Model
                             $item['pic'] = config('app.localhost_path').$item['pic'];
                           });
 
-            return ['code'=>1, 'data'=>$list];
+            return ['code'=>1,'msg'=>'请求成功', 'data'=>$list];
         } else {
             return ['code' => 0, 'msg'=>'用户不存在'];
         }
