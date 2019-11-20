@@ -17,15 +17,15 @@ Route::rule('brochureDetail','api/brochure/detail','GET');
 Route::rule('busList','api/bus/getlist','GET');
 Route::rule('busDetail','api/bus/detail','GET');
 Route::rule('busEnroll','api/bus/enroll','GET');
-Route::rule('enrollSubmit','api/bus/submit', 'POST');
+Route::rule('enrollSubmit','api/bus/submit', 'POST')->middleware(app\http\middleware\AppletToken::class);
 
 //咨询
 Route::rule('seekList','api/seek/getlist','GET');
 Route::rule('seekDetail','api/seek/detail','GET');
 
 //个人中心 
-Route::rule('getUser','api/user/user','GET');
-Route::rule('setUser','api/user/uedit','PUT');
-Route::rule('mEnroll','api/user/uenroll','GET');
-Route::rule('mVideo','api/user/uvideo','GET');
-Route::rule('mSeek','api/user/useek','GET');
+Route::rule('getUser','api/user/user','GET')->middleware(app\http\middleware\AppletToken::class);
+Route::rule('setUser','api/user/uedit','PUT')->middleware(app\http\middleware\AppletToken::class);
+Route::rule('mEnroll','api/user/uenroll','GET')->middleware(app\http\middleware\AppletToken::class);
+Route::rule('mVideo','api/user/uvideo','GET')->middleware(app\http\middleware\AppletToken::class);
+Route::rule('mSeek','api/user/useek','GET')->middleware(app\http\middleware\AppletToken::class);
