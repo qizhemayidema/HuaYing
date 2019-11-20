@@ -33,7 +33,7 @@ class AppletCourse extends Model
             $ApiCategoryRes = $ApiCategory->getList(3);
             if(!empty($ApiCategoryRes)){
                 foreach ($ApiCategoryRes as $v){
-                    $returnRes['sourceType'][] = Array('id'=>$v['id'],'name'=>$v['name']);
+                    $returnRes['data']['sourceType'][] = Array('id'=>$v['id'],'name'=>$v['name']);
                 }
             }
             //为你推荐
@@ -49,7 +49,7 @@ class AppletCourse extends Model
             $recoVideoListRes = $this->ApiVideo->recoVideoList($where,'a.id,a.pic,a.title,a.price,a.buy_sum',4);
             if(!empty($recoVideoListRes)){
                 foreach ($recoVideoListRes as $v){
-                    $returnRes['recommend'][]=Array(
+                    $returnRes['data']['recommend'][]=Array(
                         'id'=>$v['id'],
                         'pic'=>config('app.localhost_path').$v['pic'],
                         'title'=>$v['title'],
@@ -81,20 +81,20 @@ class AppletCourse extends Model
             if(empty($detailRes)) return json_encode(['code'=>0,'msg'=>'不存在课程']);
             //课程信息
             $returnRet['code'] = 1;
-            $returnRet['msg'] = 'success';
-            $returnRet['url'] = config('app.localhost_path').$detailRes['source_url'];
-            $returnRet['title'] = $detailRes['title'];
-            $returnRet['keywords'] = $detailRes['keywords'];
-            $returnRet['desc'] = $detailRes['desc'];
-            $returnRet['desc'] = $detailRes['desc'];
-            $returnRet['price'] = $detailRes['price'];
-            $returnRet['id'] = $detailRes['id'];
+            $returnRet['data']['msg'] = 'success';
+            $returnRet['data']['url'] = config('app.localhost_path').$detailRes['source_url'];
+            $returnRet['data']['title'] = $detailRes['title'];
+            $returnRet['data']['keywords'] = $detailRes['keywords'];
+            $returnRet['data']['desc'] = $detailRes['desc'];
+            $returnRet['data']['desc'] = $detailRes['desc'];
+            $returnRet['data']['price'] = $detailRes['price'];
+            $returnRet['data']['id'] = $detailRes['id'];
             //查找课程章节
             $ApiVideoSection = new ApiVideoSection();
             $getListRes = $ApiVideoSection->getList($id,$knob);
             if(!empty($getListRes)){
                 foreach ($getListRes as $v){
-                    $returnRet['knobList'][] = Array(
+                    $returnRet['data']['knobList'][] = Array(
                         'title'=>$v['title'],
                         'knob'=>$v['number'],
                         'url'=>config('app.localhost_path').$detailRes['source_url'],
@@ -106,7 +106,7 @@ class AppletCourse extends Model
             $getListCommentRes = $ApiComment->getList($id,6);
             if(!empty($getListCommentRes)){
                 foreach ($getListCommentRes as $vv){
-                    $returnRet['comment'][] = Array(
+                    $returnRet['data']['comment'][] = Array(
                         'title'=>config('app.localhost_path').$vv['avatar_url'],
                         'content'=>$vv['comment'],
                         'nickname'=>$vv['nickname'],

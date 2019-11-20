@@ -62,7 +62,7 @@ class AppletUser extends Controller
                 //修改用户表的token 用户昵称 用户头像
                 $upUserTokenRes = $ApiUser->upUserToken($userOpenidInfoRes['id'],$userToken,$nickname,$avatarUrl);
                 if(!$upUserTokenRes) return json_encode(['code'=>0,'msg'=>'token生成失败']);
-                return json_encode(['code'=>1,'msg'=>'success','userToken'=>$userToken]);
+                return json_encode(['code'=>1,'msg'=>'success','data'=>['userToken'=>$userToken]]);
             }
             //组装用户信息
             $userInfoDataArr['openid'] =$getOpenidRes['openid'];
@@ -74,7 +74,7 @@ class AppletUser extends Controller
             if(!$addFlag){
                 return json_encode(['code'=>0,'msg'=>'用户生成失败']);
             }
-            return json_encode(['code'=>1,'msg'=>'success','userToken'=>$userToken]);
+            return json_encode(['code'=>1,'msg'=>'success','data'=>['userToken'=>$userToken]]);
         }
         return json_encode(['code'=>0,'msg'=>'请求错误']);
     }

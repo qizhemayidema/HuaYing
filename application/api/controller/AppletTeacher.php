@@ -29,16 +29,16 @@ class AppletTeacher extends Controller
             if(empty($getTeachersInfo)) return json_encode(['code'=>0,'msg'=>'教师信息不存在']);
             $returnRes['code'] = 1;
             $returnRes['msg'] = 'success';
-            $returnRes['name'] = $getTeachersInfo['name'];
-            $returnRes['content'] = $getTeachersInfo['content'];  //介绍
-            $returnRes['desc'] = $getTeachersInfo['desc'];       //简介
-            $returnRes['teacherPic'] = config('app.localhost_path').$getTeachersInfo['pic'];       //简介
+            $returnRes['data']['name'] = $getTeachersInfo['name'];
+            $returnRes['data']['content'] = $getTeachersInfo['content'];  //介绍
+            $returnRes['data']['desc'] = $getTeachersInfo['desc'];       //简介
+            $returnRes['data']['teacherPic'] = config('app.localhost_path').$getTeachersInfo['pic'];       //简介
             //查询该教师的课程
             $ApiVideo = new ApiVideo();
             $getAuthorIdVideoRes = $ApiVideo->getAuthorIdVideo($id);
             if(!empty($getAuthorIdVideoRes)){
                 foreach ($getAuthorIdVideoRes as $v){
-                    $returnRes['video'][] = [
+                    $returnRes['data']['video'][] = [
                         'videoId'=>$v['id'],
                         'videoPic'=>$v['pic'],
                         'videoName'=>$v['title'],
@@ -51,7 +51,7 @@ class AppletTeacher extends Controller
             $getTeacherListRes = $ApiComment->getTeacherList($id,6);
             if(!empty($getTeacherListRes)){
                 foreach ($getTeacherListRes as $vv){
-                    $returnRes['comment'][] = [
+                    $returnRes['data']['comment'][] = [
                         'title'=>config('app.localhost_path').$vv['avatar_url'],
                         'content'=>$vv['comment'],
                         'nickname'=>$vv['nickname'],
