@@ -57,7 +57,10 @@ class ApiOrder extends Model
                           -> join($table.' b', 'a.object_id = b.id')
                           -> where($where)
                           -> order('a.pay_time desc')
-                          -> paginate(10);
+                          -> paginate(10)
+                          ->each(function($item, $key){
+                            $item['pic'] = config('app.localhost_path').$item['pic'];
+                          });
 
             return ['code'=>1, 'data'=>$list];
         } else {

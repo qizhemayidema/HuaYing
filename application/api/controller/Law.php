@@ -45,6 +45,7 @@ class Law extends Controller
 
         if ($cate_id && $detail = (new LawModel())->find($cate_id)) {
 
+            $detail['pic'] = config('app.localhost_path').$detail['pic'];
         	return json(['code' => 1, 'data'=>$detail], 256);
         } else {
         	return json(['code' => 0, 'msg'=>'律所不存在'], 256);
