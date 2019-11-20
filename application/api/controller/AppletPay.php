@@ -39,39 +39,39 @@ class AppletPay extends Controller
     public function appletWeiPay(){
         if(request()->isPost()) {
             //接收参数
-            $uid = input('post.uid');     //用户id
+            $token = input('post.token');     //用户token
             $id  = input('post.id');      //视频id
             $type = input('post.type');  //类型  1视频 2咨询
-            if($uid=='' || $id=='' || $type==''){
-                return json_encode(['code'=>1002,'message'=>'参数错误']);
+            if($token=='' || $id=='' || $type==''){
+                return json_encode(['code'=>0,'msg'=>'参数错误']);
             }
             //查询用户信息
             $ApiUser = new ApiUser();
-            $userInfo = $ApiUser->userInfo($uid);
-            if(empty($userInfo)) json_encode(['code'=>1003,'message'=>'未找到此数据']);
+            $userInfo = $ApiUser->userInfo($token);
+            if(empty($userInfo)) json_encode(['code'=>3,'msg'=>'用户不存在']);
 
             //查询该视频或者咨询的金额
             if($type==1){
                 $ApiVideo = new ApiVideo();
                 $getVideoAllData = $ApiVideo->getVideoAll($id);
-                if(empty($getVideoAllData)) return json_encode(['code'=>1003,'message'=>'未找到此数据']);
+                if(empty($getVideoAllData)) return json_encode(['code'=>0,'msg'=>'未找到此数据']);
                 $total_fee = $getVideoAllData[0]['price']*100;
                 $object_json = json_encode($getVideoAllData);
             }elseif ($type==2){
                 $piSeek = new ApiSeek();
                 $getFindSeekRes = $piSeek->getFindSeek($id);
-                if(empty($getFindSeekRes)) return json_encode(['code'=>1003,'message'=>'未找到此数据']);
+                if(empty($getFindSeekRes)) return json_encode(['code'=>0,'msg'=>'未找到此数据']);
                 $total_fee = $getFindSeekRes['price']*100;
                 $object_json = json_encode($getFindSeekRes);
             }else{
-                return json_encode(['code'=>1004,'message'=>'接口未开发']);
+                return json_encode(['code'=>0,'msg'=>'接口未开发']);
             }
 
             //生成订单
             $ApiOrder = new ApiOrder();
             $ordernum = $this->get_order_sn();
             $data['order_code'] =$ordernum;
-            $data['user_id'] =$uid;
+            $data['user_id'] =$userInfo['id'];
             $data['pay_money'] =$total_fee;
             $data['type'] =$type;
             $data['object_id'] =$id;
@@ -82,7 +82,7 @@ class AppletPay extends Controller
             $addOrderRes = $ApiOrder->addOrder($data);
             if(!$addOrderRes) {
                 Db::rollback();
-                return json_encode(['code'=>1005,'message'=>'接口异常']);
+                return json_encode(['code'=>0,'msg'=>'接口异常']);
             }
 
             //拼接请求参数       签名是最后生成
@@ -133,8 +133,8 @@ class AppletPay extends Controller
             //判断是否成功
             if ($flag['return_code'] == 'SUCCESS' && $flag['result_code'] == 'SUCCESS')   //成功
             {
-                $return['code'] = 0;
-                $return['message'] = 'success';
+                $return['code'] = 1;
+                $return['msg'] = 'success';
                 $return['prepay_id'] = 'prepay_id=' . $flag['prepay_id'];    //预支付交易会话标识
                 $return['nonceStr'] = $nonce_str;   //随机字符串
                 $time = time();
@@ -150,18 +150,18 @@ class AppletPay extends Controller
                 Db::rollback();
                 $errorcode = ["NOTENOUGH", "ORDERPAID", "ORDERCLOSED", "ORDERCLOSED"];
                 if (in_array($flag['err_code'], $errorcode)) {
-                    $return['code'] = 1006;
-                    $return['message'] = $flag['err_code_des'];
+                    $return['code'] = 0;
+                    $return['msg'] = $flag['err_code_des'];
                     return json_encode($return);
                 } else {
-                    return json_encode(['code'=>1007,'message'=>'接口异常']);
+                    return json_encode(['code'=>0,'msg'=>'接口异常']);
 //                    $name = date('Y-m-d H:i:s') . '_weipay';
 //                    $log = date('Y-m-d H:i:s') . '----' . $flag['err_code_des'];
                     //$this->LogTxt($flag['err_code_des'],$name);
                 }
             }
         }
-        return json_encode(['code'=>1001,'message'=>'请求错误']);
+        return json_encode(['code'=>0,'msg'=>'请求错误']);
     }
 
     /**
@@ -250,50 +250,23 @@ class AppletPay extends Controller
         if(request()->isGet()){
             //接收订单号
             $ordernum = input('get.ordernum');
-            if(!$ordernum) return json_encode(['code'=>1002,'message'=>'参数错误']);
+            $token = input('get.token');
+            //查询用户信息
+            $ApiUser = new ApiUser();
+            $userInfo = $ApiUser->userInfo($token);
+            if(empty($userInfo)) json_encode(['code'=>3,'msg'=>'用户不存在']);
+
+            if(!$ordernum) return json_encode(['code'=>0,'msg'=>'参数错误']);
             $ApiOrder = new ApiOrder();
-            $findOrderRes = $ApiOrder->findOrder($ordernum);
-            if(empty($findOrderRes)) return json_encode(['code'=>1003,'message'=>'订单不存在']);
+            $findOrderRes = $ApiOrder->findOrder($ordernum,$userInfo['id']);
+            if(empty($findOrderRes)) return json_encode(['code'=>0,'msg'=>'订单不存在']);
             if($findOrderRes['status']==2){  //已支付
-                return json_encode(['code'=>0,'message'=>'success']);
+                return json_encode(['code'=>1,'msg'=>'success']);
             }elseif ($findOrderRes['status']==1){
-                return json_encode(['code'=>1004,'message'=>'订单未支付']);
+                return json_encode(['code'=>0,'msg'=>'订单未支付']);
             }
         }
-        return json_encode(['code'=>1001,'message'=>'请求错误']);
-    }
-
-    /**
-     * 获取用户openid
-     * @param $js_code
-     * @return array
-     * $data 2019/11/19 22:32
-     */
-    function getAppleOpenId($js_code){
-        if($js_code=='') return array('code'=>001,'message'=>'缺少js_code');
-
-        $appid = $this->appletAppid;
-
-        $appsecret = $this->appletSecret;
-
-        $curl = "https://api.weixin.qq.com/sns/jscode2session?appid=%s&secret=%s&js_code=%s&grant_type=authorization_code";
-
-        $curl = sprintf($curl,$appid,$appsecret,$js_code);
-
-        $result = $this->curls($curl,'');
-        $resultArray = json_decode($result,true);
-        if(!isset($resultArray['errcode'])){
-            $return['code'] = 0;
-            $return['message'] ='success';
-            $return['openid'] =$resultArray['openid'];
-            $return['session_key'] =$resultArray['session_key'];
-        }
-        else{
-            $return['code'] = 002;
-            $return['message'] =$resultArray['errmsg'];
-        }
-
-        return $return;
+        return json_encode(['code'=>0,'msg'=>'请求错误']);
     }
 
     //生成订单号  保持唯一

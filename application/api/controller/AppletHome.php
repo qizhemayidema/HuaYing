@@ -66,10 +66,10 @@ class AppletHome extends Controller
             }
 
 
-            $returnArr['code']=0;
-            $returnArr['message']='success';
+            $returnArr['code']=1;
+            $returnArr['msg']='success';
             return json_encode($returnArr);
         }
-        return json_encode(['code'=>1001,'message'=>'请求错误']);
+        return json_encode(['code'=>0,'msg'=>'请求错误']);
     }
 }
