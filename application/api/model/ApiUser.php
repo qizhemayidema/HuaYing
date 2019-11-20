@@ -10,12 +10,14 @@ namespace app\api\model;
 
 use think\Db;
 use think\Model;
+use think\Cache;
 use think\Request;
 use app\common\lib\Upload;
 
 class ApiUser extends Model
 {
     protected  $table="base_user";
+
     /**
      * 获取用户信息
      * @param $uid
@@ -35,14 +37,13 @@ class ApiUser extends Model
         return $this->insertGetId($data);
     }
 
-
     /**
      * 获取用户信息
      * $data 2019/11/20
      */
     public function getUser()
     {
-        $id = input('id');
+        $id = input('user_id');
 
         if ($id && $user = $this->get($id)) {
             # code...
@@ -53,7 +54,7 @@ class ApiUser extends Model
 
             return ['code'=>1, 'data'=>$user];
         } else {
-            return ['code'=>0, 'msg'=>'用户不存在'];
+            return ['code'=>3, 'msg'=>'用户不存在'];
         }
     }
 
@@ -66,9 +67,11 @@ class ApiUser extends Model
         # code...
         $data = $request->put();
         
-        if (!isset($data['user_id']) || !Db::name('user')->find($data['user_id'])) {
+        $user_id = input('user_id');
+
+        if (!$user_id || !Db::name('user')->find($user_id)) {
             # code...
-            return ['code' => 0, 'msg'=>'用户不存在'];
+            return ['code' => 3, 'msg'=>'用户不存在'];
         }
         // 接收字段参数
         $arr = ['avatar_url','nickname','sex','province','user_id'];
