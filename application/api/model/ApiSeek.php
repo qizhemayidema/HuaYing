@@ -15,4 +15,10 @@ class ApiSeek extends Model
     public function getSeek($limits=''){
         return $this->where(['delete_time'=>0])->limit($limits)->select()->toArray();
     }
+
+    public function getFindSeek($id){
+        $where[] = ['id','=',$id];
+        $where[] = ['delete_time','=',0];
+        return $this->where($where)->find();
+    }
 }
