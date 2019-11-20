@@ -15,4 +15,15 @@ class ApiTeacher extends Model
     public function getTeachers($limits=''){
         return $this->where(['delete_time'=>0])->limit($limits)->select()->toArray();
     }
+
+    public function getTeachersInfo($id){
+        $where[] = ['id','=',$id];
+        $where[] = ['delete_time','=',0];
+        return $this->where($where)->find();
+    }
+
+    public function getFindTeacher($id){
+        $where[] = ['id','=',$id];
+        return $this->where($where)->find();
+    }
 }

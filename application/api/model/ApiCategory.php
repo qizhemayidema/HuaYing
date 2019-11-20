@@ -8,7 +8,7 @@
 
 namespace app\api\model;
 
-use Think\Model;
+use think\Model;
 class ApiCategory extends Model
 {
     protected $table = "base_category";

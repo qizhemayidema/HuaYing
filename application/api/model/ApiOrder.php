@@ -8,7 +8,7 @@
 
 namespace app\api\model;
 
-use Think\Model;
+use think\Model;
 class ApiOrder extends Model
 {
     protected $table = "base_order";
@@ -17,9 +17,10 @@ class ApiOrder extends Model
         return $this->insert($data);
     }
 
-    public function findOrder($ordernum)
+    public function findOrder($ordernum,$uid)
     {
         $where[] = ['order_code','=',$ordernum];
+        $where[] = ['user_id','=',$uid];
         return $this->where($where)->find();
     }
 

@@ -8,12 +8,13 @@
 
 namespace app\api\controller;
 
-use Think\Controller;
+use think\Controller;
 use think\facade\Env;
 use app\common\lib\RequestHttp;
-use Think\Cache;
+use think\Cache;
 use app\api\controller\WXBizDataCrypt;
 use app\api\model\ApiUser;
+use app\http\middleware\AppletToken;
 define('APPLET_ACCESS_TOKEN','applet_access_token');
 class AppletUser extends Controller
 {
@@ -42,43 +43,40 @@ class AppletUser extends Controller
         if (request()->isPost()){
             //接收参数
             $code = input('post.code');   //获取openid 的code
-            $iv = input('post.iv');   //解密数据需要的
-            $encrypteddata = input('post.encrypteddata');   //数据
-            if($code=='' || $iv=='' || $encrypteddata==''){
-                return json_encode(['code'=>1002,'message'=>'参数错误']);
+            $nickname = input('post.nickname');  //获取用户昵称
+            $avatarUrl = input('post.avatarurl');  //获取用户头像
+            if($code=='' || $nickname=='' || $avatarUrl==''){
+                return json_encode(['code'=>0,'msg'=>'参数错误']);
             }
             //获取openid
             $getOpenidRes = $this->getAppleOpenId($code);
             if($getOpenidRes['code']!=0){
-                return json_encode(['code'=>1003,'message'=>$getOpenidRes['message']);
+                return json_encode(['code'=>0,'msg'=>$getOpenidRes['message']]);
             }
             //查询该用户是否存在
             $ApiUser = new ApiUser();
             $userOpenidInfoRes = $ApiUser->userOpenidInfo($getOpenidRes['openid']);
+            //给用户生成2个小时的token
+            $userToken = $this->setToken($getOpenidRes['openid']);
             if(!empty($userOpenidInfoRes)){   //用户存在
-                return json_encode(['code'=>0,'message'=>'success','uid'=>$userOpenidInfoRes['id']]);
-            }
-            //解密数据
-            $encrypteddataRes = $this->decodeData($encrypteddata,$iv,$getOpenidRes['session_key']);
-            if($encrypteddataRes['code']!=0){
-                return json_encode(['code'=>1004,'message'=>'解密失败');
+                //修改用户表的token 用户昵称 用户头像
+                $upUserTokenRes = $ApiUser->upUserToken($userOpenidInfoRes['id'],$userToken,$nickname,$avatarUrl);
+                if(!$upUserTokenRes) return json_encode(['code'=>0,'msg'=>'token生成失败']);
+                return json_encode(['code'=>1,'msg'=>'success','userToken'=>$userToken]);
             }
             //组装用户信息
             $userInfoDataArr['openid'] =$getOpenidRes['openid'];
-            $userInfoDataArr['nickname'] =$getOpenidRes['nickName'];
-            $userInfoDataArr['city'] =$getOpenidRes['city'];
-            $userInfoDataArr['province'] =$getOpenidRes['province'];
-            $userInfoDataArr['country'] =$getOpenidRes['country'];
-            $userInfoDataArr['unionid'] =$getOpenidRes['unionId'];
+            $userInfoDataArr['nickname'] =$nickname;
             $userInfoDataArr['create_time'] =time();
-            $userInfoDataArr['avatar_url'] =$getOpenidRes['avatarUrl'];
+            $userInfoDataArr['avatar_url'] =$avatarUrl;
+            $userInfoDataArr['token'] =$userToken;
             $addFlag = $ApiUser->addUser($userInfoDataArr);
             if(!$addFlag){
-                return json_encode(['code'=>1004,'message'=>'用户生成失败');
+                return json_encode(['code'=>0,'msg'=>'用户生成失败']);
             }
-            return json_encode(['code'=>0,'message'=>'success','uid'=>$addFlag]);
+            return json_encode(['code'=>1,'msg'=>'success','userToken'=>$userToken]);
         }
-        return json_encode(['code'=>1001,'message'=>'请求错误']);
+        return json_encode(['code'=>0,'msg'=>'请求错误']);
     }
 
     /**
@@ -156,5 +154,32 @@ class AppletUser extends Controller
         }
 
         return $return;
+    }
+
+    /**
+     * 设置token
+     * @param $openid
+     * @return string
+     * $data times
+     */
+    public function setToken($openid){
+        $salt = $this->getRandChar(6);
+        $times = microtime(true)*10000;
+        $token = md5($openid.$times.$salt);
+        $cache = new Cache(['type' => config('cache.type')]);
+        $cache->set($token,'1',7200);
+        return $token;
+    }
+
+    //生成随机数
+    public function getRandChar($length){
+        $str = null;
+        $strPol = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789abcdefghijklmnopqrstuvwxyz";
+        $max = strlen($strPol)-1;
+
+        for($i=0;$i<$length;$i++){
+            $str.=$strPol[rand(0,$max)];//rand($min,$max)生成介于min和max两个数之间的一个随机整数
+        }
+        return $str;
     }
 }

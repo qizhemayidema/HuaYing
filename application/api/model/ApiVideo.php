@@ -51,4 +51,21 @@ class ApiVideo extends Model
         return $this->where($where)->setInc('buy_sum');
     }
 
+    /**
+     * 根据老师id查询课程
+     * @param $auth_id
+     * @param string $limits
+     * @return array
+     * $data times
+     */
+    public function getAuthorIdVideo($auth_id,$limits=''){
+        $where[] = ['author_id','=',$auth_id];
+        $where[] = ['delete_time','=',0];
+        return $this->where($where)->limit($limits)->select()->toArray();
+    }
+
+    public function getFindVideo($id){
+        $where[] = ['id','=',$id];
+        return $this->where($where)->find();
+    }
 }

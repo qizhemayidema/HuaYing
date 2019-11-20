@@ -7,9 +7,11 @@
  */
 return [
     'homeIndex' => 'api/AppletHome/homeIndex',
-    'appleCourse'=>'api/AppletCourse/courseList',
-    'appleCourseDetaail'=>'api/AppletCourse/courseDetail',
-    'appleWePay'=>'api/AppletPay/appletWeiPay',
-    'appleWeCheck'=>'api/AppletPay/appletWeiCheck',
-    'appleLogin'=>'api/AppletUser/Login',
+    'appletCourse'=>'api/AppletCourse/courseList',
+    'appletCourseDetaail'=>'api/AppletCourse/courseDetail',
+    'appletWePay'=>'api/AppletPay/appletWeiPay',
+    'appletWeCheck'=>'api/AppletPay/appletWeiCheck',
+    'appletLogin'=>'api/AppletUser/Login',
+    'appletTeacherDetail'=>'api/AppletTeacher/getTeacherDetail',
+    'appletPublishComment'=>'api/AppletComment/publishComment',
 ];

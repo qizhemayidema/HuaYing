@@ -46,24 +46,24 @@ class AppletCourse extends Model
             }elseif ($paytype==2){
                 $where[] = Array('a.price','>',0);
             }
-            $recoVideoListRes = $this->ApiVideo->recoVideoList($where,'a.id,a.pic,a.title,a.price,a.see_sum',4);
+            $recoVideoListRes = $this->ApiVideo->recoVideoList($where,'a.id,a.pic,a.title,a.price,a.buy_sum',4);
             if(!empty($recoVideoListRes)){
                 foreach ($recoVideoListRes as $v){
                     $returnRes['recommend'][]=Array(
                         'id'=>$v['id'],
                         'pic'=>config('app.localhost_path').$v['pic'],
                         'title'=>$v['title'],
-                        'see_sum'=>$v['see_sum'],
+                        'buy_sum'=>$v['buy_sum'],
                         'price'=>$v['price']
                     );
                 }
             }
 
-            $returnRes['code']=0;
-            $returnRes['message']='successs';
+            $returnRes['code']=1;
+            $returnRes['msg']='successs';
             return json_encode($returnRes);
         }
-        return json_encode(['code'=>1001,'message'=>'请求错误']);
+        return json_encode(['code'=>0,'msg'=>'请求错误']);
     }
 
     /**
@@ -76,12 +76,12 @@ class AppletCourse extends Model
             //接收id
             $id = input('get.id');   //视频id
             $knob = input('get.knob',1);   //第几节
-            if(!$id) return json_encode(['code'=>1002,'message'=>'请求参数错误']);
+            if(!$id) return json_encode(['code'=>0,'msg'=>'请求参数错误']);
             $detailRes = $this->ApiVideo->getVideoDetail($id,$knob,'a.*,b.source_url');
-            if(empty($detailRes)) return json_encode(['code'=>1003,'message'=>'不存在课程']);
+            if(empty($detailRes)) return json_encode(['code'=>0,'msg'=>'不存在课程']);
             //课程信息
-            $returnRet['code'] = 0;
-            $returnRet['success'] = 'success';
+            $returnRet['code'] = 1;
+            $returnRet['msg'] = 'success';
             $returnRet['url'] = config('app.localhost_path').$detailRes['source_url'];
             $returnRet['title'] = $detailRes['title'];
             $returnRet['keywords'] = $detailRes['keywords'];
@@ -103,7 +103,7 @@ class AppletCourse extends Model
             }
             //评价
             $ApiComment = new ApiComment();
-            $getListCommentRes = $ApiComment->getList($id,3);
+            $getListCommentRes = $ApiComment->getList($id,6);
             if(!empty($getListCommentRes)){
                 foreach ($getListCommentRes as $vv){
                     $returnRet['comment'][] = Array(
@@ -117,7 +117,7 @@ class AppletCourse extends Model
             }
             return json_encode($returnRet);
         }
-        return json_encode(['code'=>1001,'message'=>'请求错误']);
+        return json_encode(['code'=>0,'msg'=>'请求错误']);
     }
 
 }
