@@ -135,14 +135,14 @@ class AppletPay extends Controller
             {
                 $return['code'] = 1;
                 $return['msg'] = 'success';
-                $return['prepay_id'] = 'prepay_id=' . $flag['prepay_id'];    //预支付交易会话标识
-                $return['nonceStr'] = $nonce_str;   //随机字符串
+                $return['data']['prepay_id'] = 'prepay_id=' . $flag['prepay_id'];    //预支付交易会话标识
+                $return['data']['nonceStr'] = $nonce_str;   //随机字符串
                 $time = time();
-                $return['timeStamp'] = (string)$time;   //时间戳
+                $return['data']['timeStamp'] = (string)$time;   //时间戳
                 //签名
                 $tmp2 = "appId={$this->appletAppid}&nonceStr={$nonce_str}&package=prepay_id={$flag['prepay_id']}&signType=MD5&timeStamp={$return['timeStamp']}&key={$this->appletSecret}";
                 $sign2 = strtoupper(md5($tmp2));
-                $return['paySign'] = $sign2;
+                $return['data']['paySign'] = $sign2;
                 Db::commit();
                 return json_encode($return);
             } else   //失败
