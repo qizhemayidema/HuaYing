@@ -30,9 +30,12 @@ class Bus extends Controller
         //获取请求分类下业务id
         $cate_id = input('cate_id')?input('cate_id'):$cate[0]['id'];
 
+        $strip = input('strip')?input('strip'):12;
         $where[] = ['cate_id', '=', $cate_id];
         $where[] = ['delete_time', '=', 0];
-        $list = (new BusinessModel())->where($where)->order('id','desc')->paginate(12);
+        $list = (new BusinessModel())->where($where)->order('id','desc')->paginate($strip)->each(function($item, $key){
+                            $item['avatar_url'] = config('app.localhost_path').$item['avatar_url'];
+                          });
 
         return json(['code' => 1,'msg'=> '请求成功', 'data'=>['cate'=>$cate, 'BusinessModel'=>$list]], 256);
     }

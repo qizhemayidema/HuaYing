@@ -35,7 +35,7 @@ class ApiBusOrder extends Model
         // 验证用户是否已冻结
         if (Db::name('user')->where(['id'=>$data['user_id'], 'status'=>1])->find()) {
             # code...
-            return ['code' => 0,'msg'=> '请求成功', 'msg'=>'账号已被冻结'];
+            return ['code' => 0,'msg'=>'账号已被冻结'];
         }
 
         // 添加数据
@@ -50,6 +50,7 @@ class ApiBusOrder extends Model
                          ->find($this->id);
             $result['people'] = $this->where(['bus_id'=>$data['bus_id']])->group('user_id')->count();
             $result['appointment_time'] = date("Y/m/d", $result['appointment_time']);
+            $result['avatar_url'] = config('app.localhost_path').$result['avatar_url'];
 
             return ['code' => 1, 'msg'=>'提交成功', 'data'=>$result];
         } else {
@@ -70,14 +71,20 @@ class ApiBusOrder extends Model
             
             # 获取180天前的时间戳
             $time = strtotime('-180 day');
+            
+            $strip = input('strip')?input('strip'):10;
 
             $result = $this ->alias('a')
                             ->where('a.appointment_time > '.$time)
                             ->join('business b', 'a.bus_id = b.id')
                             ->order('a.create_time desc')
-                            ->paginate(10);
+                            ->paginate($strip)
+                            ->each(function($item, $key){
+                                $item['avatar_url'] = config('app.localhost_path').$item['avatar_url'];
+                                $item['appointment_time'] = date("Y-m-d H:i:s", $item['appointment_time']);
+                            });;
 
-            return ['code'=>1, 'data'=>$result];
+            return ['code'=>1,'msg'=> '请求成功', 'data'=>$result];
         } else {
 
             return ['code' => 0, 'msg'=>'用户不存在'];

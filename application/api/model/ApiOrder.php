@@ -52,12 +52,13 @@ class ApiOrder extends Model
         if (input('user_id') && Db::name('user')->find(input('user_id'))) {
             # code...
             $where[] = ['a.user_id', '=', input('user_id')];
+            $strip = input('strip')?input('strip'):10;
             $list = $this -> alias('a')
                           -> field('b.*, a.user_id, a.pay_time')
                           -> join($table.' b', 'a.object_id = b.id')
                           -> where($where)
                           -> order('a.pay_time desc')
-                          -> paginate(10)
+                          -> paginate($strip)
                           ->each(function($item, $key){
                             $item['pic'] = config('app.localhost_path').$item['pic'];
                           });

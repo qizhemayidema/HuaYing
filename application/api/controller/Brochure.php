@@ -27,9 +27,13 @@ class Brochure extends Controller
         if (!$cate) return json(['code' => 0, 'msg'=>'分类为空'], 256);
 
         //获取分校列表
+        $strip = input('strip')?input('strip'):12;
         //获取请求分类下分校id
         $cate_id = input('cate_id')?input('cate_id'):$cate[0]['id'];
-        $list = (new BrochureModel())->where(['cate_id'=>$cate_id])->order('id','desc')->paginate(12);
+        $list = (new BrochureModel())->where(['cate_id'=>$cate_id])->order('id','desc')->paginate($strip)->each(function($item, $key){
+                            $item['pic'] = config('app.localhost_path').$item['pic'];
+                            $item['create_time'] = date("Y-m-d H:i:s", $item['create_time']);
+                          });
 
         return json(['code' => 1,'msg'=> '请求成功', 'data'=>['cate'=>$cate, 'brochureModel'=>$list]], 256);
     }
@@ -45,6 +49,8 @@ class Brochure extends Controller
 
         if ($cate_id && $detail = (new BrochureModel())->find($cate_id)) {
 
+            $detail['pic'] = config('app.localhost_path').$detail['pic'];
+            $detail['create_time'] = date("Y-m-d H:i:s", $detail['create_time']);
         	return json(['code' => 1, 'msg'=> '请求成功', 'data'=>$detail], 256);
         } else {
         	return json(['code' => 0, 'msg'=>'分校不存在'], 256);

@@ -29,7 +29,10 @@ class Law extends Controller
         //获取律所列表
         //获取请求分类下律所id
         $cate_id = input('cate_id')?input('cate_id'):$cate[0]['id'];
-        $list = (new LawModel())->where(['cate_id'=>$cate_id])->order('id','desc')->paginate(10);
+        $strip = input('strip')?input('strip'):10;
+        $list = (new LawModel())->where(['cate_id'=>$cate_id])->order('id','desc')->paginate($strip)->each(function($item, $key){
+                            $item['pic'] = config('app.localhost_path').$item['pic'];
+                          });
 
         return json(['code' => 1,'msg'=> '请求成功', 'data'=>['cate'=>$cate, 'law'=>$list]], 256);
     }

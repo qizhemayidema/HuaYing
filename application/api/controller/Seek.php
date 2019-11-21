@@ -19,7 +19,10 @@ class Seek extends Controller
     public function getList(){
 
         //获取咨询列表
-        $list = (new SeekModel())->where(['delete_time'=>0])->order('id','desc')->paginate(4);
+        $strip = input('strip')?input('strip'):10;
+        $list = (new SeekModel())->where(['delete_time'=>0])->order('id','desc')->paginate($strip)->each(function($item, $key){
+                            $item['pic'] = config('app.localhost_path').$item['pic'];
+                          });
 
         return json(['code' => 1,'msg'=> '请求成功', 'data'=>$list], 256);
     }

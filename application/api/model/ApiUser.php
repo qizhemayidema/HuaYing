@@ -50,6 +50,8 @@ class ApiUser extends Model
                 # code...
                 return ['code'=>0, 'msg'=>'账号已被冻结'];
             }
+            
+            $user->avatar_url = config('app.localhost_path').$user->avatar_url;
 
             return ['code'=>1,'msg'=>'请求成功', 'data'=>$user];
         } else {
@@ -73,7 +75,7 @@ class ApiUser extends Model
             return ['code' => 3, 'msg' => '用户不存在'];
         }
         // 接收字段参数
-        $arr = ['avatar_url', 'nickname', 'sex', 'province', 'user_id'];
+        $arr = ['avatar_url', 'nickname', 'sex', 'province'];
 
         // 判断传参是否存在
         foreach ($data as $k => $v) {
@@ -98,7 +100,7 @@ class ApiUser extends Model
 
         if ($data) {
             # code...
-            if ($this->allowField(true)->save($data, ['id' => $data['user_id']])) {
+            if ($this->allowField(true)->save($data, ['id' => $user_id])) {
 
                 return ['code' => 1, 'msg' => '修改成功'];
             } else {
