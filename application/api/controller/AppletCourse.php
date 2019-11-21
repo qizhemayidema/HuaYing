@@ -46,7 +46,7 @@ class AppletCourse extends Model
             }elseif ($paytype==2){
                 $where[] = Array('a.price','>',0);
             }
-            $recoVideoListRes = $this->ApiVideo->recoVideoList($where,'a.id,a.pic,a.title,a.price,a.buy_sum',4);
+            $recoVideoListRes = $this->ApiVideo->recoVideoList($where,'a.id,a.pic,a.title,a.price,a.buy_sum,count(*) as knob_sum',4);
             if(!empty($recoVideoListRes)){
                 foreach ($recoVideoListRes as $v){
                     $returnRes['data']['recommend'][]=Array(
@@ -54,7 +54,8 @@ class AppletCourse extends Model
                         'pic'=>config('app.localhost_path').$v['pic'],
                         'title'=>$v['title'],
                         'buy_sum'=>$v['buy_sum'],
-                        'price'=>$v['price']
+                        'price'=>$v['price'],
+                        'knob_sum'=>$v['knob_sum']
                     );
                 }
             }

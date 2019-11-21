@@ -57,14 +57,14 @@ class AppletPay extends Controller
                 if(empty($getVideoAllData)) return json_encode(['code'=>0,'msg'=>'未找到此数据']);
                 $total_fee = $getVideoAllData[0]['price']*100;
                 $object_json = json_encode($getVideoAllData);
-                $body = '购买-'.$getVideoAllData[0]['title'];
+                $body = '华莹法律研究中心-'.$getVideoAllData[0]['title'];
             }elseif ($type==2){
                 $piSeek = new ApiSeek();
                 $getFindSeekRes = $piSeek->getFindSeek($id);
                 if(empty($getFindSeekRes)) return json_encode(['code'=>0,'msg'=>'未找到此数据']);
                 $total_fee = $getFindSeekRes['price']*100;
                 $object_json = json_encode($getFindSeekRes);
-                $body = '购买-'.$getFindSeekRes['title'];
+                $body = '华莹法律研究中心-'.$getFindSeekRes['title'];
             }else{
                 return json_encode(['code'=>0,'msg'=>'接口未开发']);
             }
@@ -145,17 +145,7 @@ class AppletPay extends Controller
             } else   //失败
             {
                 Db::rollback();
-                $errorcode = ["NOTENOUGH", "ORDERPAID", "ORDERCLOSED", "ORDERCLOSED"];
-                if (in_array($flag['err_code'], $errorcode)) {
-                    $return['code'] = 0;
-                    $return['msg'] = $flag['err_code_des'];
-                    return json_encode($return);
-                } else {
-                    return json_encode(['code'=>0,'msg'=>'接口异常']);
-//                    $name = date('Y-m-d H:i:s') . '_weipay';
-//                    $log = date('Y-m-d H:i:s') . '----' . $flag['err_code_des'];
-                    //$this->LogTxt($flag['err_code_des'],$name);
-                }
+                return json_encode(['code'=>0,'msg'=>'接口异常']);
             }
         }
         return json_encode(['code'=>0,'msg'=>'请求错误']);

@@ -23,7 +23,7 @@ class ApiVideo extends Model
 
 
     public function recoVideoList($where=Array(),$fields='',$limits=''){
-        return $this->alias('a')->join('base_category b','a.cate_id=b.id')->field($fields)->where($where)->where(['delete_time'=>0])->order('buy_sum desc,see_sum desc')->limit($limits)->select()->toArray();
+        return $this->alias('a')->join('base_category b','a.cate_id=b.id')->join('base_video_section c','a.id=c.video_id')->field($fields)->where($where)->where(['delete_time'=>0])->order('buy_sum desc,see_sum desc')->group('a.id')->limit($limits)->select()->toArray();
     }
 
     /**
