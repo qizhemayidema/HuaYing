@@ -26,6 +26,12 @@ class ApiOrder extends Model
         return $this->where($where)->find();
     }
 
+    public function findOrderNum($ordernum)
+    {
+        $where[] = ['order_code','=',$ordernum];
+        return $this->where($where)->find();
+    }
+
     /**
      * 修改订单为支付
      * @param $ordernum

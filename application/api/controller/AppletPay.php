@@ -57,12 +57,14 @@ class AppletPay extends Controller
                 if(empty($getVideoAllData)) return json_encode(['code'=>0,'msg'=>'未找到此数据']);
                 $total_fee = $getVideoAllData[0]['price']*100;
                 $object_json = json_encode($getVideoAllData);
+                $body = '购买-'.$getVideoAllData[0]['title'];
             }elseif ($type==2){
                 $piSeek = new ApiSeek();
                 $getFindSeekRes = $piSeek->getFindSeek($id);
                 if(empty($getFindSeekRes)) return json_encode(['code'=>0,'msg'=>'未找到此数据']);
                 $total_fee = $getFindSeekRes['price']*100;
                 $object_json = json_encode($getFindSeekRes);
+                $body = '购买-'.$getFindSeekRes['title'];
             }else{
                 return json_encode(['code'=>0,'msg'=>'接口未开发']);
             }
@@ -87,15 +89,10 @@ class AppletPay extends Controller
 
             //拼接请求参数       签名是最后生成
             $nonce_str = $this->getRandChar(18);   //随机字符串
-            $notify_url = "http://localhost:85/appleWeCheck";   //回调地址
-            $spbill_create_ip = ip2long($this->GetIP());  //终端ip（ip地址）
+            $notify_url = "http://localhost:85/api/appleWeCheck";   //回调地址
+            $spbill_create_ip = $this->GetIP();  //终端ip（ip地址）
             $trade_type = "JSAPI";    //支付类型
-            $getopenid = $userInfo['openid'];
-            if ($getopenid['code'] != 0) {
-                return json_encode($getopenid);
-            } else {
-                $openid = $getopenid['openid'];
-            }
+            $openid = $userInfo['openid'];
 
             //生成签名   组装后拼接密钥
             $arr = ['appid' => $this->appletAppid, 'attach' => $type, 'body' => $body, 'mch_id' => $this->appletMchid, 'nonce_str' => $nonce_str, 'notify_url' => $notify_url, 'openid' => $openid, 'out_trade_no' => $ordernum, 'spbill_create_ip' => $spbill_create_ip, 'total_fee' => $total_fee, 'trade_type' => $trade_type];
@@ -174,7 +171,7 @@ class AppletPay extends Controller
         $order_num  = $res['out_trade_no'];
         //查询订单
         $ApiOrder = new ApiOrder();
-        $orderRes =$ApiOrder->findOrder($order_num);
+        $orderRes =$ApiOrder->findOrderNum($order_num);
         if(empty($orderRes)){
             return '<xml>
                       <return_code><![CDATA[FAIL]]></return_code>
@@ -196,7 +193,7 @@ class AppletPay extends Controller
         foreach ($res as $key => $value) {
             $tmp.=$key."=".$value.'&';
         }
-        $tmp.= "key=".$this->key;
+        $tmp.= "key=".$this->appletSecret;
         //md5 加密后转大写
         $sign = strtoupper(md5($tmp));
         //验签
@@ -360,5 +357,17 @@ class AppletPay extends Controller
             return $result;
         else
             return false;
+    }
+
+    //服务器生成日志
+    public function LogTxt($log_txt="",$folder_file="log.txt"){
+        $folder_path =__DIR__.'/log/';
+        if (!file_exists($folder_path)) {
+            mkdir($folder_path,0777,TRUE);
+        }
+        $folder_path .= $folder_file;
+        $handle = fopen($folder_path,"a");
+        fwrite($handle,$log_txt);
+        fclose($handle);
     }
 }
