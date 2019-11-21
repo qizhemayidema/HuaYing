@@ -25,7 +25,7 @@ class AppletHome extends Controller
             $BannerRes = $ApiImage->getBanner(1,'url','3');
             if(!empty($BannerRes)){
                 foreach ($BannerRes as $v){
-                    $returnArr['homeBanner'][]['url'] = config('app.localhost_path').$v['url'];
+                    $returnArr['data']['homeBanner'][]['url'] = config('app.localhost_path').$v['url'];
                 }
             }
             //课程
@@ -33,7 +33,7 @@ class AppletHome extends Controller
             $VideoRes = $ApiVideo->getVideo('','',2);
             if(!empty($VideoRes)){
                 foreach ($VideoRes as $v){
-                    $returnArr['homeVideo'][] =Array(
+                    $returnArr['data']['homeVideo'][] =Array(
                         'id'=>$v['id'],
                         'url' => config('app.localhost_path').$v['pic'],
                         'title'=>$v['title']
@@ -45,7 +45,7 @@ class AppletHome extends Controller
             $SeekRes = $ApiSeek->getSeek(3);
             if(!empty($SeekRes)){
                 foreach ($SeekRes as $v){
-                    $returnArr['homeSeek'][] =Array(
+                    $returnArr['data']['homeSeek'][] =Array(
                         'id'=>$v['id'],
                         'url' => config('app.localhost_path').$v['pic'],
                         'title'=>$v['title']
@@ -57,7 +57,7 @@ class AppletHome extends Controller
             $TeacherRes = $ApiTeacher->getTeachers(4);
             if(!empty($TeacherRes)){
                 foreach ($TeacherRes as $v){
-                    $returnArr['homeTeacher'][] =Array(
+                    $returnArr['data']['homeTeacher'][] =Array(
                         'id'=>$v['id'],
                         'url' => config('app.localhost_path').$v['pic'],
                         'name'=>$v['name']

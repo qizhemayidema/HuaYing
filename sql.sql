@@ -72,6 +72,7 @@ index `is_show`(`is_show`),
 index `create_time`(`create_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+
 DROP TABLE IF EXISTS `base_manager`;
 CREATE TABLE IF NOT EXISTS `base_manager` (
 `id` int(11) NOT NULL AUTO_INCREMENT,
@@ -133,6 +134,8 @@ primary key(`id`)
 create table `base_business`(
 `id` int auto_increment,
 `cate_id` int(11) not null comment '分类id',
+`avatar_url` varchar(128) not null comment '接待人头像',
+`service_man` varchar(60) not null comment '接待人名称',
 `title` varchar(64) not null comment '标题',
 `content` text not null comment '内容介绍',
 `create_time` int(11) not null comment '创建时间',

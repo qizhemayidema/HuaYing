@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="__STATIC__/js/plugins/layer/laydate/need/laydate.css">
 <link rel="stylesheet" href="__STATIC__/js/plugins/layer/laydate/skins/default/laydate.css">
 
+<!--<link rel="stylesheet" type="text/css" href="__STATIC__/lib/Hui-iconfont/1.0.8/iconfont.css"/>-->
 <link rel="stylesheet" href="__STATIC__/js/plugins/webuploader/webuploader.css">
 <script src="__STATIC__/js/plugins/webuploader/webuploader.js"></script>
 
@@ -10,37 +11,82 @@
 <script src="__STATIC__/js/plugins/summernote/summernote-zh-CN.js"></script>
 <link rel="stylesheet" href="__STATIC__/css/plugins/summernote/summernote.css">
 <link rel="stylesheet" href="__STATIC__/css/plugins/summernote/summernote-bs3.css">
+<!--<link href="__STATIC__/js/plugins/layui/2.5.4/css/layui.css" rel="stylesheet" type="text/css"/>-->
+<script type="text/javascript" src="__STATIC__/js/plugins/layui/2.5.4/layui.all.js"></script>
+<script type="text/javascript" src="__STATIC__/js/plugins/layui/2.5.4/layui.js"></script>
+
 <div class="col-sm-12">
     <div class="ibox-content">
         <form action="" class="form-horizontal">
             {:token()}
             <input type="hidden" name="id" value="{$data.id}">
             <input type="hidden" name="pic" value="{$data.pic}">
-
+            <input type="hidden" name="roll_pic" value="{$data.roll_pic}">
             <div class="form-group">
-                <label class="col-sm-2 control-label">姓名</label>
+                <label class="col-sm-2 control-label">所属分类</label>
                 <div class="col-sm-8">
-                    <input name="name" value="{$data.name}" required  type="text" class="form-control">
+                    <select class="form-control m-b" name="cate_id" id="">
+                        {foreach $cate as $key => $value}
+                        <option value="{$value.id}" {if $value == $data.cate_id} selected {/if}>{$value.name}</option>
+                        {/foreach}
+                    </select>
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label">照片</label>
+                <label class="col-sm-2 control-label">选择作者</label>
+                <div class="col-sm-8">
+                    <select class="form-control m-b" name="author_id">
+                        <option value="0">无</option>
+                        {foreach $author as $key => $value}
+                        <option value="{$value.id}" {$value.id == $data.author_id} selected {/if}>{$value.name}</option>
+                        {/foreach}
+                    </select>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">标题</label>
+                <div class="col-sm-8">
+                    <input name="title" required value="{$data.title}" type="text" class="form-control">
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">封面</label>
                 <div class="col-sm-8">
                     <!--dom结构部分-->
                     <div id="uploader-demo">
                         <div id="filePicker" style="margin-bottom: 10px;">选择图片</div>
                         <!--用来存放item-->
                         <div id="fileList" class="uploader-list">
-                            <div id="WU_FILE_0" class="file-item thumbnail upload-state-done"><img src="{$data->pic}" style="width: 150px;">
+                            <div id="WU_FILE" class="file-item thumbnail">
+                                <img src="{$data.pic}" alt="" style="width: 100px;">
+
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
             <div class="form-group">
-                <label class="col-sm-2 control-label">简介</label>
+                <label class="col-sm-2 control-label">轮播图</label>
                 <div class="col-sm-8">
-                    <input name="desc" value="{$data.desc}" required  type="text" class="form-control">
+                    <!--dom结构部分-->
+                    <div id="uploader-demo2">
+                        <div id="filePicker2" style="margin-bottom: 10px;">选择图片</div>
+                        <!--用来存放item-->
+                        <div id="fileList2" class="uploader-list">
+                            {foreach :explode(',',$data.roll_pic) as $key => $value}
+                            <div id="WU_FILE_{$key}" class="file-item thumbnail" onclick="removeRollBack(this,'{$value}')" >
+                                <img src="{$value}" alt=""  style="width: 100px;">
+
+                            </div>
+                            {/foreach}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">售价</label>
+                <div class="col-sm-8">
+                    <input name="price" required value="{$data.price}"  type="text" class="form-control">
                 </div>
             </div>
 
@@ -48,7 +94,52 @@
                 <label class="col-sm-2 control-label">介绍</label>
                 <div class="col-sm-8">
                     <div class="summernote" style="width: 700px;">
-                        {$data.content|raw}
+                        {$data.desc|raw}
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-2 control-label">视频上传</label>
+                <div class="col-sm-8">
+                    <div id="uploadfile">
+                        <div id="thelist" class="uploader-list">
+
+                            <input onclick="add_chapter()" id="add_chapter_button" class="btn btn-secondary radius" type="button" value="添加一行">
+                            <p>&nbsp;</p>
+                            <table class="table table-border table-bordered table-bg">
+                                <tr class="text-c">
+                                    <th width="5%" class="file-num">章节</th>
+                                    <th class="file-name">课程名称</th>
+                                    <th class="file-name">课程视频(限定mp4)</th>
+                                    <th class="file-status" style="width:150px;">视频状态</th>
+                                    <th width="20%" class="file-manage">操作</th>
+                                </tr>
+                                <tbody id="chapter_tbody">
+                                {foreach $section as $key => $value}
+                                <tr>
+                                    <input type="hidden" name="old_chapter_id[]" value="{$value.id}">
+                                    <input type="hidden" name="old_chapter_video[]" class="chapter_video_url" value="{$value.source_url}">
+                                    <td class="text-c"><input name="old_chapter_num[]" type="text" class="input-text" value="{$value.number}"></td>
+                                    <td class="text-c"><input name="old_chapter_title[]" type="text" class="input-text" value="{$value.title}"></td>
+                                    <td class="text-c chapter_video_td">
+                                        <div class="layui-upload">
+
+                                            <input class="layui-upload-file old_file" type="file">
+                                        </div>
+
+                                    </td>
+                                    <td class="text-c chapter_video_status">
+                                        <span style="color:limegreen;">上传成功</span>
+
+                                    </td>
+                                    <td class="text-c">
+                                        <a title="删除" href="javascript:;" onclick="remove_chapter(this)" class="ml-5" style="text-decoration:none">x</a>
+                                    </td>
+                                </tr>
+                                {/foreach}
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -64,7 +155,12 @@
 </div>
 
 <script>
+    var chapter_num = 1;        //添加课程视频自增起始
+    var loading;
 
+
+    //是否上传视频
+    var is_upload = true;
     $(document).ready(function () {
         $('.summernote').summernote({
             lang: 'zh-CN'
@@ -79,32 +175,214 @@
         });
     };
 
+    //删除一个轮播图
+    removeRollBack = function(_this,url){
+        var pics = $('input[name=roll_pic]').val().split(',')
+
+        var new_arr = [];
+        $(pics).each(function(k,v){
+            if(v != url){
+                new_arr.push(v)
+            }
+        })
+        if (!new_arr.length){
+            $('input[name=roll_pic]').val('')
+        }else{
+            $('input[name=roll_pic]').val(new_arr.join(','))
+        }
+        $(_this).remove();
+    }
+
+    //添加一行 课程
+    add_chapter = function () {
+        chapter_num += 1;
+        let str = `<tr>
+                                <input type="hidden" name="chapter_video[]" class="chapter_video_url">
+                                <td class="text-c"><input name="chapter_num[]" type="text" class="input-text"></td>
+                                <td class="text-c"><input name="chapter_title[]" type="text" class="input-text"></td>
+                                <td class="text-c chapter_video_td">
+                                        <div class="layui-upload">
+
+                                            <input class="layui-upload-file" type="file" name="file[]">
+                                        </div>
+
+                                    </td>
+
+                                <td class="text-c chapter_video_status">未上传</td>
+                                <td class="text-c">
+                                    <a title="删除" href="javascript:;" onclick="remove_chapter(this)" class="ml-5" style="text-decoration:none">x</a>
+                                </td>
+                            </tr>`;
+        $('#chapter_tbody').append(str);
+        console.log(chapter_num);
+
+
+        //选完文件后不自动上传 图片
+        upload.render({
+            elem: '#chapter_pic_' + chapter_num
+            , url: '/upload/'
+            , auto: false
+            , accept: 'image'
+            ,field:'chapter_pic[]'
+            //,multiple: true
+            , done: function (res) {
+                console.log(res)
+            }
+        });
+        //选完文件后不自动上传 视频
+        upload.render({
+            elem: '#chapter_video_' + chapter_num
+            , url: '/upload/'
+            , auto: false
+            , accept: 'video'
+            , exts : video_exts
+            //,multiple: true
+            , done: function (res) {
+                console.log(res)
+            }
+        });
+    }
+
+    //删除一行 课程
+    remove_chapter = function (obj){
+        if ($('#chapter_tbody tr').length == 1){
+            layer.msg('最少拥有一个课程!',{icon:5,time:1000});
+        }else{
+            $(obj).parents("tr").remove();
+            layer.msg('已删除!',{icon:1,time:1000});
+        }
+    }
+
 
 
     var save = function () {
+        loading = layer.msg('提交中', {
+            icon: 16
+            ,shade: 0.01
+            ,time : 0
+        });
+
+        //检查是否拥有没有上传视频的课程
+        var flag = true;
+
+        $.each($('.chapter_video_td .layui-upload-file'),function(k,filename){
+            if (!$(filename).hasClass('old_file')){
+                var FileName = $(filename).val();
+                var index1=FileName.lastIndexOf(".");
+                var index2=FileName.length;
+                var suffix=FileName.substring(index1, index2);//后缀名
+                if (!suffix){
+                    layer.msg('有课程没有视频!',{icon: 5, time: 1500});
+                    flag = false;
+                    layer.close(loading);
+                    return false;
+                }
+            }
+
+        })
+
+        if (!flag){return false;}
+        $('#add_chapter_button').addClass('btn disabled radius');
+        $('.chapter_video_td button').addClass('btn disabled radius');
+
+
+
+
+        if (is_upload){
+            $('.chapter_video_status').each(function(k,v){
+                $(v).html("<span style='color:darkorange;'>上传中</span>");
+            })
+            var chapter_video_length = $('.chapter_video_td .layui-upload-file').length;
+
+            var length = $('.chapter_video_td .layui-upload-file').length;
+            $.each($('.chapter_video_td .layui-upload-file'),function(k,filename){
+                if (!$(filename).hasClass('old_file') || filename.files[0]) {
+
+                    var uploadData = new FormData();
+                    uploadData.append('file', filename.files[0]);
+
+                    $.ajax({
+                        url: "{:url('admin/Video/upload')}",
+                        type: 'POST',
+                        data: uploadData,
+                        cache: false,
+                        processData: false,
+                        contentType: false,
+                        xhr: function () {
+                            myXhr = $.ajaxSettings.xhr();
+                            if (myXhr.upload) { // check if upload property exists
+                                myXhr.upload.addEventListener('progress', function (e) {
+                                    var loaded = e.loaded;                  //已经上传大小情况
+                                    var total = e.total;                      //附件总大小
+                                    var percent = Math.floor(100 * loaded / total) + "%";     //已经上传的百分比
+                                    console.log("已经上传了：" + percent);
+                                    $(filename).parents('tr').find('.chapter_video_status').html('<div class="progress-bar">' +
+                                        '                                        <span class="sr-only" style="float:left;width:' + percent + '"></span>' +
+                                        '                                        </div>');
+                                }, false); // for handling the progress of the upload
+                            }
+                            return myXhr;
+
+                        }
+                    }).done(function (data, textStatus) {
+
+                        $(filename).parents('tr').find('.chapter_video_status').html("<span style='color:limegreen;'>上传成功</span>");
+                        $(filename).parents('tr').find('.chapter_video_url').val(data.msg);
+
+                        if (k + 1 === chapter_video_length) {
+                            setTimeout(function () {
+                                form_ajax();
+                            }, 350)
+                        }
+                    }).fail(function (res, textStatus, error) {
+                        try {
+                            var body = JSON.parse(res.responseText);
+                            alert('error--: ' + body.message);
+                        } catch (e) {
+                            console.error(e);
+                        }
+                        layer.close(loading);
+                    });
+                }else{
+                    $(filename).parents('tr').find('.chapter_video_status').html("<span style='color:limegreen;'>上传成功</span>");
+
+                    if (k == length - 1){
+                        form_ajax()
+                    }
+
+                }
+            })
+        } else{
+            form_ajax();
+        }
+        return false;
+    }
+
+    var form_ajax = function(){
+
         var formData = new FormData($('form')[0]);
 
-        formData.append('content',$(".summernote").code())
+        formData.append('desc',$(".summernote").code())
         $.ajax({
-            url: "{:url('admin/Teacher/update')}",
+            url: "{:url('admin/Video/update')}",
             type: 'post',
             dataType: 'json',
             data: formData,
             processData: false,
             contentType: false,
             success: function (data) {
+
                 if (data.code == 0) {
                     layer.msg(data.msg, {icon: 5})
                 } else {
-                    layer.msg('添加成功', {icon: 1});
+                    layer.msg('修改成功', {icon: 1});
                     setTimeout(function () {
-                        window.location.href = "{:url('admin/Teacher/index')}";
+                        window.location.href = "{:url('admin/Video/index')}";
                     }, 600)
                 }
             }
         })
     }
-
 
     var $list = $("#fileList");
     // 初始化Web Uploader
@@ -118,7 +396,7 @@
 
 
         // 文件接收服务端。
-        server: "{:url('admin/Law/uploadPic')}",
+        server: "{:url('admin/Video/uploadPic')}",
 
         // 选择文件的按钮。可选。
         // 内部根据当前运行是创建，可能是input元素，也可能是flash.
@@ -174,6 +452,100 @@
     uploader.on( 'uploadSuccess', function( file ,response) {
         console.log(response)
         $('input[name=pic]').val(response.msg)
+        $( '#'+file.id ).addClass('upload-state-done');
+    });
+
+    // 文件上传失败，显示上传出错。
+    uploader.on( 'uploadError', function( file ) {
+        var $li = $( '#'+file.id ),
+            $error = $li.find('div.error');
+
+        // 避免重复创建
+        if ( !$error.length ) {
+            $error = $('<div class="error"></div>').appendTo( $li );
+        }
+
+        $error.text('上传失败');
+    });
+
+    // 完成上传完了，成功或者失败，先删除进度条。
+    uploader.on( 'uploadComplete', function( file ) {
+        $( '#'+file.id ).find('.progress').remove();
+    });
+    var $list2 = $("#fileList2");
+    // 初始化Web Uploader
+    var uploader = WebUploader.create({
+
+        // 选完文件后，是否自动上传。
+        auto: true,
+
+        // swf文件路径
+        swf: "__STATIC__/js/plugins/webuploader/Uploader.swf",
+
+
+        // 文件接收服务端。
+        server: "{:url('admin/Video/uploadPic')}",
+
+        // 选择文件的按钮。可选。
+        // 内部根据当前运行是创建，可能是input元素，也可能是flash.
+        pick: '#filePicker2',
+
+        // 只允许选择图片文件。
+        accept: {
+            title: 'Images',
+            extensions: 'gif,jpg,jpeg,bmp,png',
+            mimeTypes: 'image/*'
+        }
+    });
+    uploader.on( 'fileQueued', function( file ) {
+        var $li = $(
+            '<div id="' + file.id + '" class="file-item thumbnail">' +
+            '<img>' +
+            '<div class="info">' + file.name + '</div>' +
+            '</div>'
+            ),
+            $img = $li.find('img');
+
+
+        // $list为容器jQuery实例
+        // $list2.html( $li );
+        $list2.append( $li );
+
+        // 创建缩略图
+        // 如果为非图片文件，可以不用调用此方法。
+        // thumbnailWidth x thumbnailHeight 为 100 x 100
+        uploader.makeThumb( file, function( error, src ) {
+            if ( error ) {
+                $img.replaceWith('<span>不能预览</span>');
+                return;
+            }
+
+            $img.attr( 'src', src );
+        }, 100, 100 );
+    });
+    uploader.on( 'uploadProgress', function( file, percentage ) {
+        var $li = $( '#'+file.id ),
+            $percent = $li.find('.progress span');
+
+        // 避免重复创建
+        if ( !$percent.length ) {
+            $percent = $('<p class="progress"><span></span></p>')
+                .appendTo( $li )
+                .find('span');
+        }
+
+        $percent.css( 'width', percentage * 100 + '%' );
+    });
+
+    // 文件上传成功，给item添加成功class, 用样式标记上传成功。
+    uploader.on( 'uploadSuccess', function( file ,response) {
+        var str = $('input[name=roll_pic]').val()
+        if (!str){
+            str = response.msg
+        }else{
+            str += ',' + response.msg
+        }
+        $('input[name=roll_pic]').val(str)
         $( '#'+file.id ).addClass('upload-state-done');
     });
 

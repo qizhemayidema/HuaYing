@@ -3,6 +3,7 @@
 <link rel="stylesheet" href="__STATIC__/js/plugins/layer/laydate/need/laydate.css">
 <link rel="stylesheet" href="__STATIC__/js/plugins/layer/laydate/skins/default/laydate.css">
 
+<!--<link rel="stylesheet" type="text/css" href="__STATIC__/lib/Hui-iconfont/1.0.8/iconfont.css"/>-->
 <link rel="stylesheet" href="__STATIC__/js/plugins/webuploader/webuploader.css">
 <script src="__STATIC__/js/plugins/webuploader/webuploader.js"></script>
 
@@ -10,6 +11,10 @@
 <script src="__STATIC__/js/plugins/summernote/summernote-zh-CN.js"></script>
 <link rel="stylesheet" href="__STATIC__/css/plugins/summernote/summernote.css">
 <link rel="stylesheet" href="__STATIC__/css/plugins/summernote/summernote-bs3.css">
+<!--<link href="__STATIC__/js/plugins/layui/2.5.4/css/layui.css" rel="stylesheet" type="text/css"/>-->
+<script type="text/javascript" src="__STATIC__/js/plugins/layui/2.5.4/layui.all.js"></script>
+<script type="text/javascript" src="__STATIC__/js/plugins/layui/2.5.4/layui.js"></script>
+
 <div class="col-sm-12">
     <div class="ibox-content">
         <form action="" class="form-horizontal">
@@ -29,7 +34,7 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label">选择作者</label>
                 <div class="col-sm-8">
-                    <select class="form-control m-b" name="auther_id">
+                    <select class="form-control m-b" name="author_id">
                         <option value="0">无</option>
                         {foreach $author as $key => $value}
                         <option value="{$value.id}">{$value.name}</option>
@@ -85,31 +90,41 @@
             <div class="form-group">
                 <label class="col-sm-2 control-label">视频上传</label>
                 <div class="col-sm-8">
-                    <table class="table table-hover" style="width: 341px;">
-                        <thead>
-                        <tr>
-                            <th style="" data-field="Tid" tabindex="0">
-                                <div class="th-inner ">章节</div>
-                                <div class="fht-cell" style="width: 50px;"></div>
-                            </th>
-                            <th style="" data-field="First" tabindex="0">
-                                <div class="th-inner ">标题</div>
-                                <div class="fht-cell" style="width: 141px;"></div>
-                            </th>
-                            <th style="" data-field="First" tabindex="0">
-                                <div class="th-inner ">上传视频</div>
-                                <div class="fht-cell" style="width: 141px;"></div>
-                            </th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                        <tr>
-                            <td><input type="text" ></td>
-                            <td><input type="text" ></td>
-                            <td><input type="file" ></td>
-                        </tr>
-                        </tbody>
-                    </table>
+                    <div id="uploadfile">
+                        <div id="thelist" class="uploader-list">
+                            <input onclick="add_chapter()" id="add_chapter_button" class="btn btn-secondary radius" type="button" value="添加一行">
+                            <p>&nbsp;</p>
+                            <table class="table table-border table-bordered table-bg">
+                                <tr class="text-c">
+                                    <th width="5%" class="file-num">章节</th>
+                                    <th class="file-name">课程名称</th>
+                                    <th class="file-name">课程视频(限定mp4)</th>
+                                    <th class="file-status" style="width:150px;">视频状态</th>
+                                    <th width="20%" class="file-manage">操作</th>
+                                </tr>
+                                <tbody id="chapter_tbody">
+                                <tr>
+                                    <input type="hidden" name="chapter_video[]" class="chapter_video_url">
+                                    <td class="text-c"><input name="chapter_num[]" type="text" class="input-text"></td>
+                                    <td class="text-c"><input name="chapter_title[]" type="text" class="input-text"></td>
+                                    <td class="text-c chapter_video_td">
+                                        <div class="layui-upload">
+
+                                            <input class="layui-upload-file" type="file">
+                                        </div>
+
+                                    </td>
+                                    <td class="text-c chapter_video_status">
+                                        未上传
+                                    </td>
+                                    <td class="text-c">
+                                        <a title="删除" href="javascript:;" onclick="remove_chapter(this)" class="ml-5" style="text-decoration:none">x</a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="form-group">
@@ -124,7 +139,12 @@
 </div>
 
 <script>
+    var chapter_num = 1;        //添加课程视频自增起始
+    var loading;
 
+
+    //是否上传视频
+    var is_upload = true;
     $(document).ready(function () {
         $('.summernote').summernote({
             lang: 'zh-CN'
@@ -139,32 +159,182 @@
         });
     };
 
+    //添加一行 课程
+    add_chapter = function () {
+        chapter_num += 1;
+        let str = `<tr>
+                                <input type="hidden" name="chapter_video[]" class="chapter_video_url">
+                                <td class="text-c"><input name="chapter_num[]" type="text" class="input-text"></td>
+                                <td class="text-c"><input name="chapter_title[]" type="text" class="input-text"></td>
+                                <td class="text-c chapter_video_td">
+                                        <div class="layui-upload">
+
+                                            <input class="layui-upload-file" type="file" name="file[]">
+                                        </div>
+
+                                    </td>
+
+                                <td class="text-c chapter_video_status">未上传</td>
+                                <td class="text-c">
+                                    <a title="删除" href="javascript:;" onclick="remove_chapter(this)" class="ml-5" style="text-decoration:none">x</a>
+                                </td>
+                            </tr>`;
+        $('#chapter_tbody').append(str);
+        console.log(chapter_num);
+
+
+        //选完文件后不自动上传 图片
+        upload.render({
+            elem: '#chapter_pic_' + chapter_num
+            , url: '/upload/'
+            , auto: false
+            , accept: 'image'
+            ,field:'chapter_pic[]'
+            //,multiple: true
+            , done: function (res) {
+                console.log(res)
+            }
+        });
+        //选完文件后不自动上传 视频
+        upload.render({
+            elem: '#chapter_video_' + chapter_num
+            , url: '/upload/'
+            , auto: false
+            , accept: 'video'
+            , exts : video_exts
+            //,multiple: true
+            , done: function (res) {
+                console.log(res)
+            }
+        });
+    }
+
+    //删除一行 课程
+    remove_chapter = function (obj){
+        if ($('#chapter_tbody tr').length == 1){
+            layer.msg('最少拥有一个课程!',{icon:5,time:1000});
+        }else{
+            $(obj).parents("tr").remove();
+            layer.msg('已删除!',{icon:1,time:1000});
+        }
+    }
+
 
 
     var save = function () {
+        loading = layer.msg('提交中', {
+            icon: 16
+            ,shade: 0.01
+            ,time : 0
+        });
+
+        //检查是否拥有没有上传视频的课程
+        var flag = true;
+
+        $.each($('.chapter_video_td .layui-upload-file'),function(k,filename){
+            var FileName = $(filename).val();
+            var index1=FileName.lastIndexOf(".");
+            var index2=FileName.length;
+            var suffix=FileName.substring(index1, index2);//后缀名
+            if (!suffix){
+                layer.msg('有课程没有视频!',{icon: 5, time: 1500});
+                flag = false;
+                layer.close(loading);
+                return false;
+            }
+        })
+
+        if (!flag){return false;}
+        $('#add_chapter_button').addClass('btn disabled radius');
+        $('.chapter_video_td button').addClass('btn disabled radius');
+
+
+
+
+        if (is_upload){
+            $('.chapter_video_status').each(function(k,v){
+                $(v).html("<span style='color:darkorange;'>上传中</span>");
+            })
+            var chapter_video_length = $('.chapter_video_td .layui-upload-file').length;
+
+            $.each($('.chapter_video_td .layui-upload-file'),function(k,filename){
+                var uploadData = new FormData();
+                uploadData.append('file',filename.files[0]);
+
+                $.ajax({
+                    url:"{:url('admin/Video/upload')}",
+                    type: 'POST',
+                    data: uploadData,
+                    cache: false,
+                    processData: false,
+                    contentType: false,
+                    xhr : function(){
+                        myXhr = $.ajaxSettings.xhr();
+                        if(myXhr.upload){ // check if upload property exists
+                            myXhr.upload.addEventListener('progress',function(e){
+                                var loaded = e.loaded;                  //已经上传大小情况
+                                var total = e.total;                      //附件总大小
+                                var percent = Math.floor(100*loaded/total)+"%";     //已经上传的百分比
+                                console.log("已经上传了："+percent);
+                                $(filename).parents('tr').find('.chapter_video_status').html('<div class="progress-bar">' +
+                                    '                                        <span class="sr-only" style="float:left;width:'+percent+'"></span>' +
+                                    '                                        </div>');
+                            }, false); // for handling the progress of the upload
+                        }
+                        return myXhr;
+
+                    }
+                }).done(function(data, textStatus) {
+
+                    $(filename).parents('tr').find('.chapter_video_status').html("<span style='color:limegreen;'>上传成功</span>");
+                    $(filename).parents('tr').find('.chapter_video_url').val(data.msg);
+
+                    if (k + 1 === chapter_video_length){
+                        setTimeout(function(){
+                            form_ajax();
+                        },350)
+                    }
+                }).fail(function(res, textStatus, error) {
+                    try {
+                        var body = JSON.parse(res.responseText);
+                        alert('error--: ' + body.message);
+                    } catch(e) {
+                        console.error(e);
+                    }
+                    layer.close(loading);
+                });
+            })
+        } else{
+            form_ajax();
+        }
+        return false;
+    }
+
+    var form_ajax = function(){
+
         var formData = new FormData($('form')[0]);
 
-        formData.append('content',$(".summernote").code())
+        formData.append('desc',$(".summernote").code())
         $.ajax({
-            url: "{:url('admin/Teacher/save')}",
+            url: "{:url('admin/Video/save')}",
             type: 'post',
             dataType: 'json',
             data: formData,
             processData: false,
             contentType: false,
             success: function (data) {
+
                 if (data.code == 0) {
                     layer.msg(data.msg, {icon: 5})
                 } else {
                     layer.msg('添加成功', {icon: 1});
                     setTimeout(function () {
-                        window.location.href = "{:url('admin/Teacher/index')}";
+                        window.location.href = "{:url('admin/Video/index')}";
                     }, 600)
                 }
             }
         })
     }
-
 
     var $list = $("#fileList");
     // 初始化Web Uploader

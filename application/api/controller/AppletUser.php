@@ -40,6 +40,7 @@ class AppletUser extends Controller
      */
     public function Login()
     {
+        return json_encode(['code'=>1,'msg'=>'success','data'=>['userToken'=>'fafjajkj']]);
         if (request()->isPost()){
             //接收参数
             $code = input('post.code');   //获取openid 的code

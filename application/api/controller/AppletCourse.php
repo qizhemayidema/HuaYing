@@ -81,7 +81,7 @@ class AppletCourse extends Model
             if(empty($detailRes)) return json_encode(['code'=>0,'msg'=>'不存在课程']);
             //课程信息
             $returnRet['code'] = 1;
-            $returnRet['data']['msg'] = 'success';
+            $returnRet['msg'] = 'success';
             $returnRet['data']['url'] = config('app.localhost_path').$detailRes['source_url'];
             $returnRet['data']['title'] = $detailRes['title'];
             $returnRet['data']['keywords'] = $detailRes['keywords'];
@@ -107,7 +107,7 @@ class AppletCourse extends Model
             if(!empty($getListCommentRes)){
                 foreach ($getListCommentRes as $vv){
                     $returnRet['data']['comment'][] = Array(
-                        'title'=>config('app.localhost_path').$vv['avatar_url'],
+                        'url'=>config('app.localhost_path').$vv['avatar_url'],
                         'content'=>$vv['comment'],
                         'nickname'=>$vv['nickname'],
                         'create_time'=>date('Y-m-d',$vv['create_time']),
