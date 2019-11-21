@@ -45,6 +45,8 @@ class AppletTeacher extends Controller
                         'videoBuySum'=>$v['buy_sum']
                     ];
                 }
+            }else{
+                $returnRes['data']['video'] = Array();
             }
             //评价
             $ApiComment = new ApiComment();
@@ -59,6 +61,8 @@ class AppletTeacher extends Controller
                         'score'=>$vv['score'],
                     ];
                 }
+            }else{
+                $returnRes['data']['comment'] = Array();
             }
             return json_encode($returnRes);
         }

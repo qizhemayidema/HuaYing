@@ -35,6 +35,8 @@ class AppletCourse extends Model
                 foreach ($ApiCategoryRes as $v){
                     $returnRes['data']['sourceType'][] = Array('id'=>$v['id'],'name'=>$v['name']);
                 }
+            }else{
+                $returnRes['data']['sourceType'] = Array();
             }
             //为你推荐
             $where = Array();
@@ -58,6 +60,8 @@ class AppletCourse extends Model
                         'knob_sum'=>$v['knob_sum']
                     );
                 }
+            }else{
+                $returnRes['data']['recommend']=Array();
             }
 
             $returnRes['code']=1;
@@ -101,6 +105,8 @@ class AppletCourse extends Model
                         'url'=>config('app.localhost_path').$detailRes['source_url'],
                     );
                 }
+            }else{
+                $returnRet['data']['knobList'] = Array();
             }
             //评价
             $ApiComment = new ApiComment();
@@ -115,6 +121,8 @@ class AppletCourse extends Model
                         'score'=>$vv['score'],
                     );
                 }
+            }else{
+                $returnRet['data']['comment'] = Array();
             }
             return json_encode($returnRet);
         }

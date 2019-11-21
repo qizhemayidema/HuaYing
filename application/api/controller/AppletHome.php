@@ -27,6 +27,8 @@ class AppletHome extends Controller
                 foreach ($BannerRes as $v){
                     $returnArr['data']['homeBanner'][]['url'] = config('app.localhost_path').$v['url'];
                 }
+            }else{
+                $returnArr['data']['homeBanner'] = Array();
             }
             //课程
             $ApiVideo = new ApiVideo();
@@ -39,6 +41,8 @@ class AppletHome extends Controller
                         'title'=>$v['title']
                     );
                 }
+            }else{
+                $returnArr['data']['homeVideo'] =Array();
             }
             //法律咨询
             $ApiSeek = new ApiSeek();
@@ -51,6 +55,8 @@ class AppletHome extends Controller
                         'title'=>$v['title']
                     );
                 }
+            }else{
+                $returnArr['data']['homeSeek'] =Array();
             }
             //师资力量
             $ApiTeacher = new ApiTeacher();
@@ -63,6 +69,8 @@ class AppletHome extends Controller
                         'name'=>$v['name']
                     );
                 }
+            }else{
+                $returnArr['data']['homeTeacher'] =Array();
             }
 
 

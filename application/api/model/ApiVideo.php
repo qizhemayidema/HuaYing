@@ -36,7 +36,7 @@ class ApiVideo extends Model
      */
     public function getVideoDetail($id,$knob,$fields=''){
         $where[] = Array('a.id','=',$id);
-        $where[] = Array('b.number','<>',$knob);
+        $where[] = Array('b.number','=',$knob);
         return $this->alias('a')->join('base_video_section b','a.id=b.video_id')->field($fields)->where($where)->where(['delete_time'=>0])->find();
     }
 
