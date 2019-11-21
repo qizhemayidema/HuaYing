@@ -40,7 +40,7 @@ class AppletTeacher extends Controller
                 foreach ($getAuthorIdVideoRes as $v){
                     $returnRes['data']['video'][] = [
                         'videoId'=>$v['id'],
-                        'videoPic'=>$v['pic'],
+                        'videoPic'=>config('app.localhost_path').$v['pic'],
                         'videoName'=>$v['title'],
                         'videoBuySum'=>$v['buy_sum']
                     ];
@@ -52,7 +52,7 @@ class AppletTeacher extends Controller
             if(!empty($getTeacherListRes)){
                 foreach ($getTeacherListRes as $vv){
                     $returnRes['data']['comment'][] = [
-                        'title'=>config('app.localhost_path').$vv['avatar_url'],
+                        'url'=>config('app.localhost_path').$vv['avatar_url'],
                         'content'=>$vv['comment'],
                         'nickname'=>$vv['nickname'],
                         'create_time'=>date('Y-m-d',$vv['create_time']),
