@@ -328,37 +328,6 @@ class AppletPay extends Controller
         return $str;
     }
 
-    //curl模拟发送http[s]请求(get/post)
-    function curls($url,$xml,$second=30)
-    {
-        $ch = curl_init();//初始化curl
-        curl_setopt($ch, CURLOPT_URL,$url);//抓取指定网页
-
-        //设置超时
-        curl_setopt($ch, CURLOPT_TIMEOUT, $second);
-        curl_setopt($ch,CURLOPT_URL, $url);
-        curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,FALSE);
-        curl_setopt($ch,CURLOPT_SSL_VERIFYHOST,2);
-
-        //设置header
-        curl_setopt($ch, CURLOPT_HEADER, FALSE);
-
-        //要求结果为字符串且输出到屏幕上
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
-
-        //post提交方式
-        curl_setopt($ch, CURLOPT_POST, 1);
-        curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
-
-        //运行curl
-        $result = curl_exec($ch);
-        curl_close($ch);
-        if($result)
-            return $result;
-        else
-            return false;
-    }
-
     //服务器生成日志
     public function LogTxt($log_txt="",$folder_file="log.txt"){
         $folder_path =__DIR__.'/log/';

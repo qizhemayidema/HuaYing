@@ -117,7 +117,7 @@ class AppletUser extends Controller
 
         $curl = sprintf($curl,$appid,$appsecret,$js_code);
 
-        $result = $this->Curl->get($curl,false);
+        $result = $this->curls($curl,'');
         $resultArray = json_decode($result,true);
         if(!isset($resultArray['errcode'])){
             $return['code'] = 0;
@@ -181,5 +181,36 @@ class AppletUser extends Controller
             $str.=$strPol[rand(0,$max)];//rand($min,$max)生成介于min和max两个数之间的一个随机整数
         }
         return $str;
+    }
+
+    //curl模拟发送http[s]请求(get/post)
+    function curls($url,$xml,$second=30)
+    {
+        $ch = curl_init();//初始化curl
+        curl_setopt($ch, CURLOPT_URL,$url);//抓取指定网页
+
+        //设置超时
+        curl_setopt($ch, CURLOPT_TIMEOUT, $second);
+        curl_setopt($ch,CURLOPT_URL, $url);
+        curl_setopt($ch,CURLOPT_SSL_VERIFYPEER,FALSE);
+        curl_setopt($ch,CURLOPT_SSL_VERIFYHOST,2);
+
+        //设置header
+        curl_setopt($ch, CURLOPT_HEADER, FALSE);
+
+        //要求结果为字符串且输出到屏幕上
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, TRUE);
+
+        //post提交方式
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $xml);
+
+        //运行curl
+        $result = curl_exec($ch);
+        curl_close($ch);
+        if($result)
+            return $result;
+        else
+            return false;
     }
 }
