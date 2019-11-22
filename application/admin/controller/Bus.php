@@ -2,6 +2,7 @@
 
 namespace app\admin\controller;
 
+use app\common\lib\Upload;
 use app\common\model\Category;
 use app\common\typeCode\cate\Business;
 use think\Controller;
@@ -41,6 +42,8 @@ class Bus extends Base
             'cate_id|分类'   => 'require',
             'title|标题'      => 'require|max:64',
             'content|内容'    => 'require',
+            'avatar_url|联系人头像'   => 'require',
+            'service_man|联系人名称'  => 'require|max:30',
             '__token__|. '   => 'token',
         ];
 
@@ -54,6 +57,8 @@ class Bus extends Base
             'cate_id'   => $data['cate_id'],
             'title'     => $data['title'],
             'content'   => $data['content'],
+            'avatar_url' => $data['avatar_url'],
+            'service_man' => $data['service_man'],
             'create_time'   => time(),
         ];
 
@@ -86,6 +91,8 @@ class Bus extends Base
             'cate_id|分类'   => 'require',
             'title|标题'      => 'require|max:64',
             'content|内容'    => 'require',
+            'avatar_url|联系人头像'   => 'require',
+            'service_man|联系人名称'  => 'require|max:30',
             '__token__|. '   => 'token',
         ];
 
@@ -99,6 +106,8 @@ class Bus extends Base
             'cate_id'   => $data['cate_id'],
             'title'     => $data['title'],
             'content'   => $data['content'],
+            'avatar_url' => $data['avatar_url'],
+            'service_man' => $data['service_man'],
         ];
 
         (new \app\common\model\Business())->where(['id'=>$data['id']])->update($update);
@@ -113,5 +122,11 @@ class Bus extends Base
         (new \app\common\model\Business())->where(['id'=>$id])->update(['delete_time'=>time()]);
 
         return json(['code'=>1,'msg'=>'success']);
+    }
+
+    public function uploadPic()
+    {
+        $path = 'bus/';
+        return (new Upload())->uploadOnePic($path);
     }
 }
