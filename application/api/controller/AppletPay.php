@@ -74,7 +74,7 @@ class AppletPay extends Controller
             $ordernum = $this->get_order_sn();
             $data['order_code'] =$ordernum;
             $data['user_id'] =$userInfo['id'];
-            $data['pay_money'] =$total_fee;
+            $data['pay_money'] =$total_fee/100;
             $data['type'] =$type;
             $data['object_id'] =$id;
             $data['object_json'] =$object_json;
