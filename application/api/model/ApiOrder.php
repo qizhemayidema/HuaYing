@@ -76,10 +76,12 @@ class ApiOrder extends Model
     }
 
     /**
-     * 查询该用户的某个
+     * 查询该用户的某个视频或者咨询有没有购买过
      * @param $uid
-     * @param $ordernum
-     * $data times
+     * @param $type    1 视频 2 咨询
+     * @param $id
+     * @return array|false|null|\PDOStatement|string|Model
+     * $data 2019/11/22 19:59
      */
     public function userOrderFind($uid,$type,$id){
         $where['user_id'] =$uid;
