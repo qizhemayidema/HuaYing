@@ -11,7 +11,7 @@ use think\Controller;
 use app\common\model\Brochure as BrochureModel;
 use app\common\typeCode\cate\Brochure as CateType;
 use app\common\model\Category as CategoryModel;
-
+use app\common\lib\Verify;
 
 class Brochure extends Controller
 {
@@ -48,7 +48,8 @@ class Brochure extends Controller
         $cate_id = input('id');
 
         if ($cate_id && $detail = (new BrochureModel())->find($cate_id)) {
-
+            $Verify = new Verify();
+            $detail['content'] = $Verify->replaceImg($detail['content']);
             $detail['pic'] = config('app.localhost_path').$detail['pic'];
             $detail['create_time'] = date("Y-m-d H:i:s", $detail['create_time']);
         	return json(['code' => 1, 'msg'=> '请求成功', 'data'=>$detail], 256);
