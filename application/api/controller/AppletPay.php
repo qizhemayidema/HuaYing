@@ -55,14 +55,16 @@ class AppletPay extends Controller
                 $ApiVideo = new ApiVideo();
                 $getVideoAllData = $ApiVideo->getVideoAll($id);
                 if(empty($getVideoAllData)) return json_encode(['code'=>0,'msg'=>'未找到此数据']);
-                $total_fee = $getVideoAllData[0]['price']*100;
+//                $total_fee = $getVideoAllData[0]['price']*100;
+                $total_fee = 1;
                 $object_json = json_encode($getVideoAllData);
                 $body = '华莹法律研究中心-'.$getVideoAllData[0]['title'];
             }elseif ($type==2){
                 $piSeek = new ApiSeek();
                 $getFindSeekRes = $piSeek->getFindSeek($id);
                 if(empty($getFindSeekRes)) return json_encode(['code'=>0,'msg'=>'未找到此数据']);
-                $total_fee = $getFindSeekRes['price']*100;
+//                $total_fee = $getFindSeekRes['price']*100;
+                $total_fee = 1;
                 $object_json = json_encode($getFindSeekRes);
                 $body = '华莹法律研究中心-'.$getFindSeekRes['title'];
             }else{
@@ -88,12 +90,11 @@ class AppletPay extends Controller
             }
 
             //拼接请求参数       签名是最后生成
-            $nonce_str = $this->getRandChar(18);   //随机字符串
-            $notify_url = "http://localhost:85/api/appleWeCheck";   //回调地址
+            $nonce_str = $this->getRandChar(32);   //随机字符串
+            $notify_url = request()->Domain().url("pay.notify");   //回调地址
             $spbill_create_ip = $this->GetIP();  //终端ip（ip地址）
             $trade_type = "JSAPI";    //支付类型
             $openid = $userInfo['openid'];
-
             //生成签名   组装后拼接密钥
             $arr = ['appid' => $this->appletAppid, 'attach' => $type, 'body' => $body, 'mch_id' => $this->appletMchid, 'nonce_str' => $nonce_str, 'notify_url' => $notify_url, 'openid' => $openid, 'out_trade_no' => $ordernum, 'spbill_create_ip' => $spbill_create_ip, 'total_fee' => $total_fee, 'trade_type' => $trade_type];
             //key排序
@@ -103,30 +104,19 @@ class AppletPay extends Controller
             foreach ($arr as $key => $value) {
                 $tmp .= $key . "=" . $value . '&';
             }
-            $tmp .= "key=" . $this->appletSecret;
+            $tmp .= "key=" . $this->appletPaySecret;
             //md5 加密后转大写
             $sign = strtoupper(md5($tmp));
             //组装xml格式
-            $res = "<xml>
-                   <appid>{$this->appletAppid}</appid>
-                   <attach>{$type}</attach>
-                   <body>{$body}</body>
-                   <mch_id>{$this->appletMchid}</mch_id>
-                   <nonce_str>{$nonce_str}</nonce_str>
-                   <notify_url>{$notify_url}</notify_url>
-                   <openid>{$openid}</openid>
-                   <out_trade_no>{$ordernum}</out_trade_no>
-                   <spbill_create_ip>{$spbill_create_ip}</spbill_create_ip>
-                   <total_fee>{$total_fee}</total_fee>
-                   <trade_type>JSAPI</trade_type>
-                   <sign>{$sign}</sign>
-                </xml>";
+            $res = "<xml><appid>{$this->appletAppid}</appid><attach>{$type}</attach><body>{$body}</body><mch_id>{$this->appletMchid}</mch_id><nonce_str>{$nonce_str}</nonce_str><notify_url>{$notify_url}</notify_url><openid>{$openid}</openid><out_trade_no>{$ordernum}</out_trade_no><spbill_create_ip>{$spbill_create_ip}</spbill_create_ip><total_fee>{$total_fee}</total_fee><trade_type>JSAPI</trade_type><sign>{$sign}</sign></xml>";
+
             //curl 发送请求
             $url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
             $RequestHttp = new RequestHttp();
             $fg = $RequestHttp->post($url, $res);
             //将返回的参数转为数组
             $flag = $this->xml2Array($fg);
+
             //判断是否成功
             if ($flag['return_code'] == 'SUCCESS' && $flag['result_code'] == 'SUCCESS')   //成功
             {
@@ -137,7 +127,7 @@ class AppletPay extends Controller
                 $time = time();
                 $return['data']['timeStamp'] = (string)$time;   //时间戳
                 //签名
-                $tmp2 = "appId={$this->appletAppid}&nonceStr={$nonce_str}&package=prepay_id={$flag['prepay_id']}&signType=MD5&timeStamp={$return['timeStamp']}&key={$this->appletSecret}";
+                $tmp2 = "appId={$this->appletAppid}&nonceStr={$nonce_str}&package=prepay_id={$flag['prepay_id']}&signType=MD5&timeStamp={$return['data']['timeStamp']}&key={$this->appletPaySecret}";
                 $sign2 = strtoupper(md5($tmp2));
                 $return['data']['paySign'] = $sign2;
                 Db::commit();
@@ -145,7 +135,7 @@ class AppletPay extends Controller
             } else   //失败
             {
                 Db::rollback();
-                return json_encode(['code'=>0,'msg'=>'接口异常']);
+                return json_encode(['code'=>0,'msg'=>$flag]);
             }
         }
         return json_encode(['code'=>0,'msg'=>'请求错误']);

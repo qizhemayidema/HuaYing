@@ -30,8 +30,13 @@ class Order extends Base
         $info = (new \app\common\model\Order())->alias('order')
             ->join('user user','user.id = order.user_id')
             ->where(['order.id'=>$id])
+            ->field('order.*,user.*')
             ->find()->toArray();
+
+        dump(json_decode($info['object_json'],256));die;
         $info['data'] = json_decode($info['object_json'],256);
+
+        dump($info);die;
         $this->assign('order',$info);
 
         return $this->fetch();
