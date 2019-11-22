@@ -55,15 +55,17 @@ class AppletPay extends Controller
                 $ApiVideo = new ApiVideo();
                 $getVideoAllData = $ApiVideo->getVideoAll($id);
                 if(empty($getVideoAllData)) return json_encode(['code'=>0,'msg'=>'未找到此数据']);
+                $order_price = $getVideoAllData[0]['price'];
                 $total_fee = $getVideoAllData[0]['price']*100;
-                $object_json = json_encode($getVideoAllData);
+                $object_json = json_encode($getVideoAllData,true);
                 $body = '华莹法律研究中心-'.$getVideoAllData[0]['title'];
             }elseif ($type==2){
                 $piSeek = new ApiSeek();
                 $getFindSeekRes = $piSeek->getFindSeek($id);
                 if(empty($getFindSeekRes)) return json_encode(['code'=>0,'msg'=>'未找到此数据']);
+                $order_price = $getFindSeekRes['price'];
                 $total_fee = $getFindSeekRes['price']*100;
-                $object_json = json_encode($getFindSeekRes);
+                $object_json = json_encode($getFindSeekRes,true);
                 $body = '华莹法律研究中心-'.$getFindSeekRes['title'];
             }else{
                 return json_encode(['code'=>0,'msg'=>'接口未开发']);
@@ -74,7 +76,7 @@ class AppletPay extends Controller
             $ordernum = $this->get_order_sn();
             $data['order_code'] =$ordernum;
             $data['user_id'] =$userInfo['id'];
-            $data['pay_money'] =$total_fee/100;
+            $data['pay_money'] =$order_price;
             $data['type'] =$type;
             $data['object_id'] =$id;
             $data['object_json'] =$object_json;
