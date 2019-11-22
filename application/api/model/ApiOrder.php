@@ -74,4 +74,18 @@ class ApiOrder extends Model
             return ['code' => 0, 'msg'=>'用户不存在'];
         }
     }
+
+    /**
+     * 查询该用户的某个
+     * @param $uid
+     * @param $ordernum
+     * $data times
+     */
+    public function userOrderFind($uid,$type,$id){
+        $where['user_id'] =$uid;
+        $where['object_id'] = $id;
+        $where['type']  = $type;
+        $where['status']  = 2;
+        return $this->where($where)->find();
+    }
 }

@@ -54,18 +54,20 @@ class AppletPay extends Controller
             if($type==1){
                 $ApiVideo = new ApiVideo();
                 $getVideoAllData = $ApiVideo->getVideoAll($id);
+                unset($getVideoAllData['desc']);
                 if(empty($getVideoAllData)) return json_encode(['code'=>0,'msg'=>'未找到此数据']);
-//                $total_fee = $getVideoAllData[0]['price']*100;
-                $total_fee = 1;
-                $object_json = json_encode($getVideoAllData);
+                $order_price = $getVideoAllData[0]['price'];
+                $total_fee = $getVideoAllData[0]['price']*100;
+                $object_json = json_encode($getVideoAllData,true);
                 $body = '华莹法律研究中心-'.$getVideoAllData[0]['title'];
             }elseif ($type==2){
                 $piSeek = new ApiSeek();
                 $getFindSeekRes = $piSeek->getFindSeek($id);
+                unset($getFindSeekRes['content']);
                 if(empty($getFindSeekRes)) return json_encode(['code'=>0,'msg'=>'未找到此数据']);
-//                $total_fee = $getFindSeekRes['price']*100;
-                $total_fee = 1;
-                $object_json = json_encode($getFindSeekRes);
+                $order_price = $getFindSeekRes['price'];
+                $total_fee = $getFindSeekRes['price']*100;
+                $object_json = json_encode($getFindSeekRes,true);
                 $body = '华莹法律研究中心-'.$getFindSeekRes['title'];
             }else{
                 return json_encode(['code'=>0,'msg'=>'接口未开发']);
@@ -76,7 +78,7 @@ class AppletPay extends Controller
             $ordernum = $this->get_order_sn();
             $data['order_code'] =$ordernum;
             $data['user_id'] =$userInfo['id'];
-            $data['pay_money'] =$total_fee;
+            $data['pay_money'] =$order_price;
             $data['type'] =$type;
             $data['object_id'] =$id;
             $data['object_json'] =$object_json;
@@ -91,10 +93,11 @@ class AppletPay extends Controller
 
             //拼接请求参数       签名是最后生成
             $nonce_str = $this->getRandChar(32);   //随机字符串
-            $notify_url = request()->Domain().url("pay.notify");   //回调地址
+            $notify_url = request()->Domain().url('pay.notify');   //回调地址
             $spbill_create_ip = $this->GetIP();  //终端ip（ip地址）
             $trade_type = "JSAPI";    //支付类型
             $openid = $userInfo['openid'];
+
             //生成签名   组装后拼接密钥
             $arr = ['appid' => $this->appletAppid, 'attach' => $type, 'body' => $body, 'mch_id' => $this->appletMchid, 'nonce_str' => $nonce_str, 'notify_url' => $notify_url, 'openid' => $openid, 'out_trade_no' => $ordernum, 'spbill_create_ip' => $spbill_create_ip, 'total_fee' => $total_fee, 'trade_type' => $trade_type];
             //key排序
@@ -108,15 +111,26 @@ class AppletPay extends Controller
             //md5 加密后转大写
             $sign = strtoupper(md5($tmp));
             //组装xml格式
-            $res = "<xml><appid>{$this->appletAppid}</appid><attach>{$type}</attach><body>{$body}</body><mch_id>{$this->appletMchid}</mch_id><nonce_str>{$nonce_str}</nonce_str><notify_url>{$notify_url}</notify_url><openid>{$openid}</openid><out_trade_no>{$ordernum}</out_trade_no><spbill_create_ip>{$spbill_create_ip}</spbill_create_ip><total_fee>{$total_fee}</total_fee><trade_type>JSAPI</trade_type><sign>{$sign}</sign></xml>";
-
+            $res = "<xml>
+                   <appid>{$this->appletAppid}</appid>
+                   <attach>{$type}</attach>
+                   <body>{$body}</body>
+                   <mch_id>{$this->appletMchid}</mch_id>
+                   <nonce_str>{$nonce_str}</nonce_str>
+                   <notify_url>{$notify_url}</notify_url>
+                   <openid>{$openid}</openid>
+                   <out_trade_no>{$ordernum}</out_trade_no>
+                   <spbill_create_ip>{$spbill_create_ip}</spbill_create_ip>
+                   <total_fee>{$total_fee}</total_fee>
+                   <trade_type>JSAPI</trade_type>
+                   <sign>{$sign}</sign>
+                </xml>";
             //curl 发送请求
             $url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
             $RequestHttp = new RequestHttp();
             $fg = $RequestHttp->post($url, $res);
             //将返回的参数转为数组
             $flag = $this->xml2Array($fg);
-
             //判断是否成功
             if ($flag['return_code'] == 'SUCCESS' && $flag['result_code'] == 'SUCCESS')   //成功
             {
@@ -135,7 +149,7 @@ class AppletPay extends Controller
             } else   //失败
             {
                 Db::rollback();
-                return json_encode(['code'=>0,'msg'=>$flag]);
+                return json_encode(['code'=>0,'msg'=>'接口异常']);
             }
         }
         return json_encode(['code'=>0,'msg'=>'请求错误']);
@@ -173,7 +187,7 @@ class AppletPay extends Controller
         foreach ($res as $key => $value) {
             $tmp.=$key."=".$value.'&';
         }
-        $tmp.= "key=".$this->appletSecret;
+        $tmp.= "key=".$this->appletPaySecret;
         //md5 加密后转大写
         $sign = strtoupper(md5($tmp));
         //验签

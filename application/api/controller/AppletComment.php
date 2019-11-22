@@ -13,6 +13,7 @@ use app\api\model\ApiUser;
 use app\api\model\ApiVideo;
 use app\api\model\ApiTeacher;
 use app\api\model\ApiComment;
+use app\common\lib\Verify;
 class AppletComment extends Controller
 {
     /**
