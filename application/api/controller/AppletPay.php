@@ -187,7 +187,7 @@ class AppletPay extends Controller
         foreach ($res as $key => $value) {
             $tmp.=$key."=".$value.'&';
         }
-        $tmp.= "key=".$this->appletSecret;
+        $tmp.= "key=".$this->appletPaySecret;
         //md5 加密后转大写
         $sign = strtoupper(md5($tmp));
         //验签
