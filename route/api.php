@@ -45,7 +45,7 @@ Route::group('api',function(){
 
     //支付
     Route::rule('appletWePay','api/AppletPay/appletWeiPay', 'POST')->middleware(app\http\middleware\AppletToken::class);
-    Route::rule('appletWeCheck','api/AppletPay/appletWeiCheck');
+    Route::rule('appletWeCheck','api/AppletPay/appletWeiCheck')->name('pay.notify');
 
     //订单
     Route::rule('appletOrderPayStatus','api/AppletPay/getOrderPayStatus','GET')->middleware(app\http\middleware\AppletToken::class);

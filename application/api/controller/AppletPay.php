@@ -92,8 +92,8 @@ class AppletPay extends Controller
             }
 
             //拼接请求参数       签名是最后生成
-            $nonce_str = $this->getRandChar(18);   //随机字符串
-            $notify_url = "http://localhost:85/api/appleWeCheck";   //回调地址
+            $nonce_str = $this->getRandChar(32);   //随机字符串
+            $notify_url = request()->Domain().url('pay.notify');   //回调地址
             $spbill_create_ip = $this->GetIP();  //终端ip（ip地址）
             $trade_type = "JSAPI";    //支付类型
             $openid = $userInfo['openid'];
@@ -107,7 +107,7 @@ class AppletPay extends Controller
             foreach ($arr as $key => $value) {
                 $tmp .= $key . "=" . $value . '&';
             }
-            $tmp .= "key=" . $this->appletSecret;
+            $tmp .= "key=" . $this->appletPaySecret;
             //md5 加密后转大写
             $sign = strtoupper(md5($tmp));
             //组装xml格式
@@ -141,7 +141,7 @@ class AppletPay extends Controller
                 $time = time();
                 $return['data']['timeStamp'] = (string)$time;   //时间戳
                 //签名
-                $tmp2 = "appId={$this->appletAppid}&nonceStr={$nonce_str}&package=prepay_id={$flag['prepay_id']}&signType=MD5&timeStamp={$return['timeStamp']}&key={$this->appletSecret}";
+                $tmp2 = "appId={$this->appletAppid}&nonceStr={$nonce_str}&package=prepay_id={$flag['prepay_id']}&signType=MD5&timeStamp={$return['data']['timeStamp']}&key={$this->appletPaySecret}";
                 $sign2 = strtoupper(md5($tmp2));
                 $return['data']['paySign'] = $sign2;
                 Db::commit();

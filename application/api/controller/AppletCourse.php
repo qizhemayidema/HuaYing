@@ -14,6 +14,8 @@ use app\api\model\ApiVideo;
 use app\api\model\ApiVideoSection;
 use app\api\model\ApiComment;
 use app\common\lib\Verify;
+use app\api\model\ApiOrder;
+use app\api\model\ApiUser;
 class AppletCourse extends Model
 {
     protected  $ApiVideo = '';
@@ -83,13 +85,30 @@ class AppletCourse extends Model
             //接收id
             $id = input('get.id');   //视频id
             $knob = input('get.knob',1);   //第几节
+            $token = input('get.token');  //token
             if(!$id) return json_encode(['code'=>0,'msg'=>'请求参数错误']);
             $detailRes = $this->ApiVideo->getVideoDetail($id,$knob,'a.*,b.source_url');
             if(empty($detailRes)) return json_encode(['code'=>0,'msg'=>'不存在课程']);
             //课程信息
             $returnRet['code'] = 1;
             $returnRet['msg'] = 'success';
-            $returnRet['data']['url'] = config('app.localhost_path').$detailRes['source_url'];
+            if($token==''){   //用户没有登陆
+                $returnRet['data']['url'] = '';
+            }else{
+                $ApiOrder = new ApiOrder();
+                //通过token查询用户id
+                $ApiUser = new ApiUser();
+                $userInfo = $ApiUser->userInfo($token);
+                if(empty($userInfo)) return json_encode(Array('code'=>0,'msg'=>'用户不存在'));
+                //查找该用户有没有购买此课程
+                $orderRes = $ApiOrder->userOrderFind($userInfo['id'],1,$id);
+                if(empty($orderRes)){
+                    $returnRet['data']['url'] = '';
+                }else{
+                    $returnRet['data']['url'] = config('app.localhost_path').$detailRes['source_url'];
+                }
+            }
+
             $returnRet['data']['title'] = $detailRes['title'];
             $returnRet['data']['keywords'] = $detailRes['keywords'];
             $returnRet['data']['desc'] = $Verify->replaceImg($detailRes['desc']);
