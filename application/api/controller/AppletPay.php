@@ -54,6 +54,7 @@ class AppletPay extends Controller
             if($type==1){
                 $ApiVideo = new ApiVideo();
                 $getVideoAllData = $ApiVideo->getVideoAll($id);
+                unset($getVideoAllData['desc']);
                 if(empty($getVideoAllData)) return json_encode(['code'=>0,'msg'=>'未找到此数据']);
                 $order_price = $getVideoAllData[0]['price'];
                 $total_fee = $getVideoAllData[0]['price']*100;
@@ -62,6 +63,7 @@ class AppletPay extends Controller
             }elseif ($type==2){
                 $piSeek = new ApiSeek();
                 $getFindSeekRes = $piSeek->getFindSeek($id);
+                unset($getFindSeekRes['content']);
                 if(empty($getFindSeekRes)) return json_encode(['code'=>0,'msg'=>'未找到此数据']);
                 $order_price = $getFindSeekRes['price'];
                 $total_fee = $getFindSeekRes['price']*100;
