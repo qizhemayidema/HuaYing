@@ -12,7 +12,7 @@ use app\common\typeCode\cate\Business as CateType;
 use app\common\model\Category as CategoryModel;
 use app\api\model\ApiBus;
 use app\api\model\ApiBusOrder;
-
+use app\common\lib\Verify;
 class Bus extends Controller
 {
     /**
@@ -30,7 +30,7 @@ class Bus extends Controller
         //获取请求分类下业务id
         $cate_id = input('cate_id')?input('cate_id'):$cate[0]['id'];
 
-        $strip = input('strip')?input('strip'):12;
+        $strip = input('strip')?input('strip'):120;
         $where[] = ['cate_id', '=', $cate_id];
         $where[] = ['delete_time', '=', 0];
         $list = (new BusinessModel())->where($where)->order('id','desc')->paginate($strip)->each(function($item, $key){
@@ -50,7 +50,8 @@ class Bus extends Controller
         $cate_id = input('id');
 
         if ($cate_id && $detail = (new BusinessModel())->find($cate_id)) {
-
+            $Verify = new Verify();
+            $detail['content'] = $Verify->replaceImg($detail['content']);
         	return json(['code' => 1,'msg'=> '请求成功', 'data'=>$detail], 256);
         } else {
         	return json(['code' => 0, 'msg'=>'该业务不存在'], 256);

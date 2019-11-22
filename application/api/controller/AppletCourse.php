@@ -13,6 +13,7 @@ use app\api\model\ApiCategory;
 use app\api\model\ApiVideo;
 use app\api\model\ApiVideoSection;
 use app\api\model\ApiComment;
+use app\common\lib\Verify;
 class AppletCourse extends Model
 {
     protected  $ApiVideo = '';
@@ -78,6 +79,7 @@ class AppletCourse extends Model
     public function courseDetail()
     {
         if(request()->isGet()){
+            $Verify = new Verify();
             //接收id
             $id = input('get.id');   //视频id
             $knob = input('get.knob',1);   //第几节
@@ -90,8 +92,7 @@ class AppletCourse extends Model
             $returnRet['data']['url'] = config('app.localhost_path').$detailRes['source_url'];
             $returnRet['data']['title'] = $detailRes['title'];
             $returnRet['data']['keywords'] = $detailRes['keywords'];
-            $returnRet['data']['desc'] = $detailRes['desc'];
-            $returnRet['data']['desc'] = $detailRes['desc'];
+            $returnRet['data']['desc'] = $Verify->replaceImg($detailRes['desc']);
             $returnRet['data']['price'] = $detailRes['price'];
             $returnRet['data']['id'] = $detailRes['id'];
             //查找课程章节

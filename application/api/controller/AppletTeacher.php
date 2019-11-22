@@ -12,6 +12,7 @@ use think\Controller;
 use app\api\model\ApiTeacher;
 use app\api\model\ApiVideo;
 use app\api\model\ApiComment;
+use app\common\lib\Verify;
 class AppletTeacher extends Controller
 {
     /**
@@ -20,6 +21,7 @@ class AppletTeacher extends Controller
      */
     public function getTeacherDetail(){
         if(request()->isGet()){
+            $Verify = new Verify();
             //接收教师id
             $id = input('get.id');
             if(!$id) return json_encode(['code'=>0,'msg'=>'参数错误']);
@@ -30,7 +32,7 @@ class AppletTeacher extends Controller
             $returnRes['code'] = 1;
             $returnRes['msg'] = 'success';
             $returnRes['data']['name'] = $getTeachersInfo['name'];
-            $returnRes['data']['content'] = $getTeachersInfo['content'];  //介绍
+            $returnRes['data']['content'] = $Verify->replaceImg($getTeachersInfo['content']);  //介绍
             $returnRes['data']['desc'] = $getTeachersInfo['desc'];       //简介
             $returnRes['data']['teacherPic'] = config('app.localhost_path').$getTeachersInfo['pic'];       //简介
             //查询该教师的课程

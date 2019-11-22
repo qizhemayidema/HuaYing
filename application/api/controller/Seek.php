@@ -9,6 +9,7 @@ namespace app\api\controller;
 
 use think\Controller;
 use app\common\model\Seek as SeekModel;
+use app\common\lib\Verify;
 
 class Seek extends Controller
 {
@@ -37,7 +38,8 @@ class Seek extends Controller
         $cate_id = input('id');
 
         if ($cate_id && $detail = (new SeekModel())->find($cate_id)) {
-
+            $Verify = new Verify();
+            $detail['content'] = $Verify->replaceImg($detail['content']);
             $detail['pic'] = config('app.localhost_path').$detail['pic'];
         	return json(['code' => 1,'msg'=> '请求成功', 'data'=>$detail], 256);
         } else {

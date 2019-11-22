@@ -11,7 +11,7 @@ use think\Controller;
 use app\common\model\Law as LawModel;
 use app\common\typeCode\cate\Law as CateType;
 use app\common\model\Category as CategoryModel;
-
+use app\common\lib\Verify;
 
 class Law extends Controller
 {
@@ -47,7 +47,8 @@ class Law extends Controller
         $cate_id = input('id');
 
         if ($cate_id && $detail = (new LawModel())->find($cate_id)) {
-
+            $Verify = new Verify();
+            $detail['content'] = $Verify->replaceImg($detail['content']);
             $detail['pic'] = config('app.localhost_path').$detail['pic'];
         	return json(['code' => 1,'msg'=> '请求成功', 'data'=>$detail], 256);
         } else {
