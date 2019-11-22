@@ -197,7 +197,7 @@ class AppletPay extends Controller
             {
                 if($orderRes['pay_money']==$res['total_fee']/100){
                     //修改订单状态
-                    $paytimes = strtotime($res['time_end']);
+                    $paytimes = time();
                     Db::startTrans();
                     $upOrderStatusRes =$ApiOrder->upOrderStatus($order_num,$paytimes);
                     if(!$upOrderStatusRes){
