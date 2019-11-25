@@ -33,6 +33,8 @@ class Seek extends Base
             'desc|简介' => 'require|max:256',
             'content|内容' => 'require',
             'price|价格' => 'require|number',
+            'name|联系人名称'  => 'require|max:30',
+            'phone|联系方式' => "require|max:20",
         ];
 
         $validate = new Validate($rules);
@@ -48,6 +50,8 @@ class Seek extends Base
             'content' => $post['content'],
             'price' => $post['price'],
             'create_time' => time(),
+            'name'=>$post['name'],
+            'phone'=>$post['phone'],
         ];
 
         (new \app\common\model\Seek())->insert($data);
@@ -76,6 +80,8 @@ class Seek extends Base
             'desc|简介' => 'require|max:256',
             'content|内容' => 'require',
             'price|价格' => 'require',
+            'name|联系人名称'  => 'require|max:30',
+            'phone|联系方式' => "require|max:20",
         ];
 
         $validate = new Validate($rules);
@@ -90,6 +96,8 @@ class Seek extends Base
             'desc' => $post['desc'],
             'content' => $post['content'],
             'price' => $post['price'],
+            'name'=>$post['name'],
+            'phone'=>$post['phone'],
         ];
 
         (new \app\common\model\Seek())->where(['id'=>$post['id']])->update($data);
