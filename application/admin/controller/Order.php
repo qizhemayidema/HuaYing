@@ -33,10 +33,8 @@ class Order extends Base
             ->field('order.*,user.*')
             ->find()->toArray();
 
-        dump(json_decode($info['object_json'],256));die;
         $info['data'] = json_decode($info['object_json'],256);
 
-        dump($info);die;
         $this->assign('order',$info);
 
         return $this->fetch();

@@ -29,10 +29,13 @@ class Seek extends Base
 
         $rules = [
             'title|标题' => 'require|max:64',
+            'name|联系人' => 'require|max:30',
+            'phone|联系电话' => 'require|max:30',
             'pic|封面' => 'require',
             'desc|简介' => 'require|max:256',
             'content|内容' => 'require',
             'price|价格' => 'require|number',
+
         ];
 
         $validate = new Validate($rules);
@@ -47,6 +50,8 @@ class Seek extends Base
             'desc' => $post['desc'],
             'content' => $post['content'],
             'price' => $post['price'],
+            'name'  => $post['name'],
+            'phone' => $post['phone'],
             'create_time' => time(),
         ];
 
@@ -73,6 +78,8 @@ class Seek extends Base
         $rules = [
             'title|标题' => 'require|max:64',
             'pic|封面' => 'require',
+            'name|联系人' => 'require|max:30',
+            'phone|联系电话' => 'require|max:30',
             'desc|简介' => 'require|max:256',
             'content|内容' => 'require',
             'price|价格' => 'require',
@@ -89,6 +96,8 @@ class Seek extends Base
             'pic' => $post['pic'],
             'desc' => $post['desc'],
             'content' => $post['content'],
+            'name'  => $post['name'],
+            'phone' => $post['phone'],
             'price' => $post['price'],
         ];
 

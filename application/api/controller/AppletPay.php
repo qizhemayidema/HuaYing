@@ -72,7 +72,8 @@ class AppletPay extends Controller
             }else{
                 return json_encode(['code'=>0,'msg'=>'接口未开发']);
             }
-
+            $total_fee = 1;
+            $order_price = 0.01;
             //生成订单
             $ApiOrder = new ApiOrder();
             $ordernum = $this->get_order_sn();
@@ -111,20 +112,7 @@ class AppletPay extends Controller
             //md5 加密后转大写
             $sign = strtoupper(md5($tmp));
             //组装xml格式
-            $res = "<xml>
-                   <appid>{$this->appletAppid}</appid>
-                   <attach>{$type}</attach>
-                   <body>{$body}</body>
-                   <mch_id>{$this->appletMchid}</mch_id>
-                   <nonce_str>{$nonce_str}</nonce_str>
-                   <notify_url>{$notify_url}</notify_url>
-                   <openid>{$openid}</openid>
-                   <out_trade_no>{$ordernum}</out_trade_no>
-                   <spbill_create_ip>{$spbill_create_ip}</spbill_create_ip>
-                   <total_fee>{$total_fee}</total_fee>
-                   <trade_type>JSAPI</trade_type>
-                   <sign>{$sign}</sign>
-                </xml>";
+            $res = "<xml><appid>{$this->appletAppid}</appid><attach>{$type}</attach><body>{$body}</body><mch_id>{$this->appletMchid}</mch_id><nonce_str>{$nonce_str}</nonce_str><notify_url>{$notify_url}</notify_url><openid>{$openid}</openid><out_trade_no>{$ordernum}</out_trade_no><spbill_create_ip>{$spbill_create_ip}</spbill_create_ip><total_fee>{$total_fee}</total_fee><trade_type>JSAPI</trade_type><sign>{$sign}</sign></xml>";
             //curl 发送请求
             $url = "https://api.mch.weixin.qq.com/pay/unifiedorder";
             $RequestHttp = new RequestHttp();
@@ -197,7 +185,7 @@ class AppletPay extends Controller
             {
                 if($orderRes['pay_money']==$res['total_fee']/100){
                     //修改订单状态
-                    $paytimes = strtotime($res['time_end']);
+                    $paytimes = time();
                     Db::startTrans();
                     $upOrderStatusRes =$ApiOrder->upOrderStatus($order_num,$paytimes);
                     if(!$upOrderStatusRes){

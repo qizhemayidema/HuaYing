@@ -42,7 +42,7 @@ class ApiOrder extends Model
         $where[] = ['order_code','=',$ordernum];
         $update['status'] = 2;
         $update['pay_time'] = $times;
-        return $this->where($where)->update();
+        return $this->where($where)->update($update);
     }
 
     /**
