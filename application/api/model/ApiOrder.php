@@ -68,8 +68,8 @@ class ApiOrder extends Model
                           ->each(function($item, $key){
                             $item['pic'] = config('app.localhost_path').$item['pic'];
                             $object_jsons = json_decode($item['object_json'],true);
-                            $item['name'] =  $object_jsons['name'];
-                            $item['phone'] = $object_jsons['phone'];
+                            $item['name'] =  isset($object_jsons['name'])?$object_jsons['name']:'';
+                            $item['phone'] = isset($object_jsons['phone'])?$object_jsons['phone']:'';
                           });
 
             return ['code'=>1,'msg'=>'请求成功', 'data'=>$list];
