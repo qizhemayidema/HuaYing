@@ -14,7 +14,7 @@ class ApiCategory extends Model
     protected $table = "base_category";
 
     public function getList($type){
-        return $this->where(['type'=>$type])->order('order_num asc')->select()->toArray();
+        return $this->where(['type'=>$type])->order('order_num desc')->select()->toArray();
     }
 
 }

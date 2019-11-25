@@ -60,13 +60,16 @@ class ApiOrder extends Model
             $where[] = ['a.user_id', '=', input('user_id')];
             $strip = input('strip')?input('strip'):10;
             $list = $this -> alias('a')
-                          -> field('b.*, a.user_id, a.pay_time')
+                          -> field('b.*, a.user_id, a.pay_time,a.object_json')
                           -> join($table.' b', 'a.object_id = b.id')
                           -> where($where)
                           -> order('a.pay_time desc')
                           -> paginate($strip)
                           ->each(function($item, $key){
                             $item['pic'] = config('app.localhost_path').$item['pic'];
+                            $object_jsons = json_decode($item['object_json'],true);
+                            $item['name'] =  isset($object_jsons['name'])?$object_jsons['name']:'';
+                            $item['phone'] = isset($object_jsons['phone'])?$object_jsons['phone']:'';
                           });
 
             return ['code'=>1,'msg'=>'请求成功', 'data'=>$list];
@@ -76,10 +79,12 @@ class ApiOrder extends Model
     }
 
     /**
-     * 查询该用户的某个
+     * 查询该用户的某个视频或者咨询有没有购买过
      * @param $uid
-     * @param $ordernum
-     * $data times
+     * @param $type    1 视频 2 咨询
+     * @param $id
+     * @return array|false|null|\PDOStatement|string|Model
+     * $data 2019/11/22 19:59
      */
     public function userOrderFind($uid,$type,$id){
         $where['user_id'] =$uid;
