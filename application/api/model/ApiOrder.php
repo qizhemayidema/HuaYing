@@ -60,13 +60,16 @@ class ApiOrder extends Model
             $where[] = ['a.user_id', '=', input('user_id')];
             $strip = input('strip')?input('strip'):10;
             $list = $this -> alias('a')
-                          -> field('b.*, a.user_id, a.pay_time')
+                          -> field('b.*, a.user_id, a.pay_time,a.object_json')
                           -> join($table.' b', 'a.object_id = b.id')
                           -> where($where)
                           -> order('a.pay_time desc')
                           -> paginate($strip)
                           ->each(function($item, $key){
                             $item['pic'] = config('app.localhost_path').$item['pic'];
+                            $object_jsons = json_decode($item['object_json'],true);
+                            $item['name'] =  $object_jsons['name'];
+                            $item['phone'] = $object_jsons['phone'];
                           });
 
             return ['code'=>1,'msg'=>'请求成功', 'data'=>$list];

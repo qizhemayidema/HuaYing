@@ -50,9 +50,9 @@ class AppletComment extends Controller
                 $ApiTeacher = new ApiTeacher();
                 $getFindTeacher = $ApiTeacher->getFindTeacher($object_id);
                 if(empty($getFindTeacher))  return  json_encode(['code'=>0,'msg'=>'老师不存在']);
-                //查询该用户有没有购买过此咨询
-                $orderRes = $ApiOrder->userOrderFind($userInfoRes['id'],2,$object_id);
-                if(empty($orderRes)) return  json_encode(['code'=>0,'msg'=>'您没有购买当前咨询']);
+//                //查询该用户有没有购买过此咨询
+//                $orderRes = $ApiOrder->userOrderFind($userInfoRes['id'],2,$object_id);
+//                if(empty($orderRes)) return  json_encode(['code'=>0,'msg'=>'您没有购买当前咨询']);
             }else{
                 return  json_encode(['code'=>0,'msg'=>'类型错误']);
             }
